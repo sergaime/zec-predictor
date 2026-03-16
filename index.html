@@ -107,6 +107,50 @@ body{background:#06080c;color:#e0e0e0;font-family:-apple-system,BlinkMacSystemFo
 .ov-cell.sell{border-color:#ff525233}.ov-cell.sell .ov-pct,.ov-cell.sell .ov-dir{color:#ff5252}
 .ov-cell.neutral .ov-pct,.ov-cell.neutral .ov-dir{color:#666}
 
+/* ── PRICE TARGETS ── */
+.targets-card{background:#0d1017;border-radius:14px;padding:16px;margin:10px 16px;border:1px solid #141820}
+.targets-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.targets-title{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;opacity:.35;font-weight:600}
+.targets-dir{font-size:11px;font-weight:800;padding:2px 8px;border-radius:4px;letter-spacing:1px}
+.targets-dir.buy{background:#00e67618;color:#00e676}
+.targets-dir.sell{background:#ff525218;color:#ff5252}
+.targets-dir.neutral{background:#ffffff08;color:#666}
+
+.target-visual{position:relative;margin:0 0 8px;padding:0 4px}
+.target-track{position:relative;height:120px;display:flex;flex-direction:column;justify-content:space-between;
+  margin-left:90px;margin-right:14px}
+.target-line{display:flex;align-items:center;gap:8px;position:relative;height:24px}
+.target-label{font-size:10px;opacity:.35;text-transform:uppercase;letter-spacing:.5px;width:76px;text-align:right;
+  position:absolute;left:-84px;font-weight:500}
+.target-bar{flex:1;height:2px;border-radius:1px;position:relative}
+.target-price{font-size:14px;font-weight:700;min-width:70px;text-align:right;font-variant-numeric:tabular-nums}
+.target-pct{font-size:10px;opacity:.4;margin-left:4px;font-weight:500}
+
+.target-line.high .target-bar{background:linear-gradient(90deg,#00e67600,#00e67666)}
+.target-line.mid .target-bar{background:linear-gradient(90deg,#00e67600,#00e67633)}
+.target-line.current .target-bar{background:#4fc3f7;height:3px;box-shadow:0 0 8px #4fc3f744}
+.target-line.current .target-price{color:#4fc3f7}
+.target-line.midlow .target-bar{background:linear-gradient(90deg,#ff525200,#ff525233)}
+.target-line.low .target-bar{background:linear-gradient(90deg,#ff525200,#ff525266)}
+
+.target-line.high .target-price{color:#00e676}
+.target-line.mid .target-price{color:#69f0ae}
+.target-line.midlow .target-price{color:#ff8a80}
+.target-line.low .target-price{color:#ff5252}
+
+.target-method{font-size:10px;opacity:.25;text-align:center;margin-top:8px;letter-spacing:.3px}
+
+/* ── POTENTIAL GAIN/LOSS PILLS ── */
+.potential-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.potential-pill{text-align:center;padding:10px 8px;border-radius:10px;border:1px solid #1a1f2e}
+.potential-pill.gain{background:#00e67610;border-color:#00e67622}
+.potential-pill.loss{background:#ff525210;border-color:#ff525222}
+.potential-pill .pp-label{font-size:10px;opacity:.4;text-transform:uppercase;letter-spacing:.5px}
+.potential-pill .pp-price{font-size:18px;font-weight:800;margin:3px 0 1px}
+.potential-pill .pp-pct{font-size:12px;font-weight:600}
+.potential-pill.gain .pp-price,.potential-pill.gain .pp-pct{color:#00e676}
+.potential-pill.loss .pp-price,.potential-pill.loss .pp-pct{color:#ff5252}
+
 .updated-footer{text-align:center;padding:12px;font-size:10px;opacity:.25;letter-spacing:.5px}
 .loading{text-align:center;padding:60px 20px;opacity:.3;font-size:14px}
 .error-msg{text-align:center;padding:20px;color:#ff5252;font-size:13px}
@@ -306,6 +350,107 @@ function calcVWAP(candles, lookback=20) {
   return cumVol === 0 ? candles[end-1].close : cumTPV / cumVol;
 }
 
+// ══════════════════════════════════════
+//  PRICE TARGET ENGINE
+//  Uses 4 methods: ATR, Fibonacci,
+//  Support/Resistance, Bollinger Bands
+// ══════════════════════════════════════
+
+function calcPriceTargets(candles, currentPrice, direction, adxVal, bb, ema50) {
+  const L = candles.length - 1;
+
+  // 1. ATR-based targets (Average True Range)
+  const atrPeriod = 14;
+  let atrSum = 0;
+  for (let i = Math.max(1, L - atrPeriod + 1); i <= L; i++) {
+    const h = candles[i].high, l = candles[i].low, pc = candles[i-1].close;
+    atrSum += Math.max(h - l, Math.abs(h - pc), Math.abs(l - pc));
+  }
+  const atr = atrSum / atrPeriod;
+  // Conservative: 1.5x ATR, Aggressive: 2.5x ATR
+  const atrTargetUp1 = currentPrice + atr * 1.5;
+  const atrTargetUp2 = currentPrice + atr * 2.5;
+  const atrTargetDown1 = currentPrice - atr * 1.5;
+  const atrTargetDown2 = currentPrice - atr * 2.5;
+
+  // 2. Swing high/low Support & Resistance (last 50 candles)
+  const lookback = Math.min(50, L);
+  const recentCandles = candles.slice(L - lookback, L + 1);
+  const swingHighs = [], swingLows = [];
+  for (let i = 2; i < recentCandles.length - 2; i++) {
+    const c = recentCandles[i];
+    if (c.high > recentCandles[i-1].high && c.high > recentCandles[i-2].high &&
+        c.high > recentCandles[i+1].high && c.high > recentCandles[i+2].high) {
+      swingHighs.push(c.high);
+    }
+    if (c.low < recentCandles[i-1].low && c.low < recentCandles[i-2].low &&
+        c.low < recentCandles[i+1].low && c.low < recentCandles[i+2].low) {
+      swingLows.push(c.low);
+    }
+  }
+  // Nearest resistance above price and support below price
+  const resistances = swingHighs.filter(h => h > currentPrice).sort((a,b) => a - b);
+  const supports = swingLows.filter(l => l < currentPrice).sort((a,b) => b - a);
+  const nearestResistance = resistances[0] || currentPrice + atr * 2;
+  const farResistance = resistances[1] || currentPrice + atr * 3;
+  const nearestSupport = supports[0] || currentPrice - atr * 2;
+  const farSupport = supports[1] || currentPrice - atr * 3;
+
+  // 3. Fibonacci retracement/extension from recent swing
+  const recentHigh = Math.max(...recentCandles.map(c => c.high));
+  const recentLow = Math.min(...recentCandles.map(c => c.low));
+  const fibRange = recentHigh - recentLow;
+  // Fib extension levels
+  const fib618up = currentPrice + fibRange * 0.618;
+  const fib1up = currentPrice + fibRange * 1.0;
+  const fib618down = currentPrice - fibRange * 0.618;
+  const fib1down = currentPrice - fibRange * 1.0;
+  // Fib retracement targets
+  const fib382ret = recentHigh - fibRange * 0.382;
+  const fib618ret = recentHigh - fibRange * 0.618;
+
+  // 4. Bollinger Band targets
+  const bbUpper = bb.upper[L] || currentPrice + atr;
+  const bbLower = bb.lower[L] || currentPrice - atr;
+  const bbMid = bb.mid[L] || currentPrice;
+
+  // ── AGGREGATE: weighted average of methods ──
+  // Confidence multiplier: stronger signal = extend targets further
+  const strength = adxVal > 25 ? 1.2 : adxVal > 15 ? 1.0 : 0.8;
+
+  let upTarget1, upTarget2, downTarget1, downTarget2;
+
+  // Conservative target (closer): avg of nearest resistance, ATR 1.5x, Fib 0.618, BB upper
+  upTarget1 = ((nearestResistance + atrTargetUp1 + fib618up + bbUpper) / 4) * (0.95 + strength * 0.05);
+  // Aggressive target (further): avg of far resistance, ATR 2.5x, Fib 1.0
+  upTarget2 = ((farResistance + atrTargetUp2 + fib1up) / 3) * (0.95 + strength * 0.05);
+
+  // Conservative support: avg of nearest support, ATR 1.5x down, Fib 0.618 down, BB lower
+  downTarget1 = ((nearestSupport + atrTargetDown1 + fib618down + bbLower) / 4) * (1.05 - strength * 0.05);
+  // Aggressive support: avg of far support, ATR 2.5x down, Fib 1.0 down
+  downTarget2 = ((farSupport + atrTargetDown2 + fib1down) / 3) * (1.05 - strength * 0.05);
+
+  // Ensure logical ordering
+  upTarget1 = Math.max(currentPrice * 1.002, upTarget1);
+  upTarget2 = Math.max(upTarget1 * 1.005, upTarget2);
+  downTarget1 = Math.min(currentPrice * 0.998, downTarget1);
+  downTarget2 = Math.min(downTarget1 * 0.995, downTarget2);
+
+  return {
+    upTarget1: +upTarget1.toFixed(2),
+    upTarget2: +upTarget2.toFixed(2),
+    downTarget1: +downTarget1.toFixed(2),
+    downTarget2: +downTarget2.toFixed(2),
+    upPct1: +((upTarget1 - currentPrice) / currentPrice * 100).toFixed(2),
+    upPct2: +((upTarget2 - currentPrice) / currentPrice * 100).toFixed(2),
+    downPct1: +((downTarget1 - currentPrice) / currentPrice * 100).toFixed(2),
+    downPct2: +((downTarget2 - currentPrice) / currentPrice * 100).toFixed(2),
+    atr: +atr.toFixed(2),
+    nearestResistance: +nearestResistance.toFixed(2),
+    nearestSupport: +nearestSupport.toFixed(2)
+  };
+}
+
 // ══════════════════════════════════════════
 //  COMPOSITE PREDICTION ENGINE
 //  Inspired by FreqAI aggregate scoring +
@@ -487,12 +632,16 @@ function analyze(candles) {
       sub: 'Bollinger Bands contracting. Big move expected soon.' };
   }
 
+  // ══ PRICE TARGET CALCULATION ══
+  // Uses 4 methods averaged: ATR projection, Fibonacci, Support/Resistance, Bollinger Bands
+  const targets = calcPriceTargets(candles, price, direction, adxVal, bb, ema50);
+
   const c = candles[L];
   const prevClose = candles[Math.max(0, L-1)].close;
 
   return {
     price, direction, dirClass, displayPct, rawScore,
-    factors, warning,
+    factors, warning, targets,
     mfiVal, rsiVal, adxVal, obvTrend: obvNow > obvSmaVal ? 'up' : 'down',
     buyFactors: factors.filter(f => f.score > 0.1).length,
     sellFactors: factors.filter(f => f.score < -0.1).length,
@@ -506,7 +655,7 @@ function analyze(candles) {
 // ══════════════
 
 function render(result) {
-  const { factors, ohlc, direction, dirClass, displayPct, warning, mfiVal, rsiVal, adxVal,
+  const { factors, ohlc, direction, dirClass, displayPct, warning, targets, mfiVal, rsiVal, adxVal,
     buyFactors, sellFactors, rawScore } = result;
 
   // Price
@@ -571,6 +720,61 @@ function render(result) {
           <div class="fp-val" style="color:${adxVal > 25 ? '#4fc3f7' : '#555'}">${adxVal.toFixed(0)}</div>
         </div>
       </div>
+    </div>
+
+    <!-- PRICE TARGETS -->
+    <div class="targets-card">
+      <div class="targets-header">
+        <span class="targets-title">Price Targets (USDT)</span>
+        <span class="targets-dir ${dirClass}">${direction === 'BUY' ? 'UPSIDE TARGETS' : direction === 'SELL' ? 'DOWNSIDE RISK' : 'RANGE BOUND'}</span>
+      </div>
+      <div class="target-visual">
+        <div class="target-track">
+          <div class="target-line high">
+            <span class="target-label">${direction === 'SELL' ? 'Resistance' : 'Target 2'}</span>
+            <div class="target-bar"></div>
+            <span class="target-price">$${targets.upTarget2.toFixed(2)}</span>
+            <span class="target-pct">+${targets.upPct2.toFixed(1)}%</span>
+          </div>
+          <div class="target-line mid">
+            <span class="target-label">${direction === 'SELL' ? 'Resistance 1' : 'Target 1'}</span>
+            <div class="target-bar"></div>
+            <span class="target-price">$${targets.upTarget1.toFixed(2)}</span>
+            <span class="target-pct">+${targets.upPct1.toFixed(1)}%</span>
+          </div>
+          <div class="target-line current">
+            <span class="target-label">Current</span>
+            <div class="target-bar"></div>
+            <span class="target-price">$${result.price.toFixed(2)}</span>
+            <span class="target-pct">NOW</span>
+          </div>
+          <div class="target-line midlow">
+            <span class="target-label">${direction === 'BUY' ? 'Support 1' : 'Target 1'}</span>
+            <div class="target-bar"></div>
+            <span class="target-price">$${targets.downTarget1.toFixed(2)}</span>
+            <span class="target-pct">${targets.downPct1.toFixed(1)}%</span>
+          </div>
+          <div class="target-line low">
+            <span class="target-label">${direction === 'BUY' ? 'Support' : 'Target 2'}</span>
+            <div class="target-bar"></div>
+            <span class="target-price">$${targets.downTarget2.toFixed(2)}</span>
+            <span class="target-pct">${targets.downPct2.toFixed(1)}%</span>
+          </div>
+        </div>
+      </div>
+      <div class="potential-row">
+        <div class="potential-pill gain">
+          <div class="pp-label">Potential High</div>
+          <div class="pp-price">$${(direction === 'BUY' ? targets.upTarget2 : targets.upTarget1).toFixed(2)}</div>
+          <div class="pp-pct">+${(direction === 'BUY' ? targets.upPct2 : targets.upPct1).toFixed(1)}%</div>
+        </div>
+        <div class="potential-pill loss">
+          <div class="pp-label">Potential Low</div>
+          <div class="pp-price">$${(direction === 'SELL' ? targets.downTarget2 : targets.downTarget1).toFixed(2)}</div>
+          <div class="pp-pct">${(direction === 'SELL' ? targets.downPct2 : targets.downPct1).toFixed(1)}%</div>
+        </div>
+      </div>
+      <div class="target-method">Based on ATR(14) · Fibonacci · Support/Resistance · Bollinger Bands</div>
     </div>
 
     <div class="cards">
