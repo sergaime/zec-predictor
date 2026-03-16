@@ -99,7 +99,11 @@ body{background:#06080c;color:#e0e0e0;font-family:-apple-system,BlinkMacSystemFo
 
 /* ── MULTI-TF OVERVIEW ── */
 .overview-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:10px 16px}
-.ov-cell{background:#0d1017;border-radius:12px;padding:12px 8px;text-align:center;border:1px solid #141820}
+.ov-cell{background:#0d1017;border-radius:12px;padding:12px 8px;text-align:center;border:1px solid #141820;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .15s,border-color .2s,box-shadow .2s;
+  user-select:none;-webkit-user-select:none}
+.ov-cell:active{transform:scale(0.94)}
+.ov-cell.active-tf{border-color:#4fc3f7 !important;box-shadow:0 0 12px #4fc3f722}
 .ov-cell .ov-tf{font-size:11px;opacity:.4;font-weight:600;letter-spacing:1px}
 .ov-cell .ov-pct{font-size:22px;font-weight:800;margin:4px 0}
 .ov-cell .ov-dir{font-size:10px;font-weight:700;letter-spacing:1px}
@@ -833,15 +837,19 @@ async function fetchAllTFOverview() {
 
   for (const tf of TIMEFRAMES) {
     const cell = document.createElement('div');
-    cell.className = 'ov-cell neutral';
+    cell.className = `ov-cell neutral${tf === activeTF ? ' active-tf' : ''}`;
+    cell.dataset.tf = tf;
     cell.innerHTML = `<div class="ov-tf">${tf}</div><div class="ov-pct" style="color:#444">...</div><div class="ov-dir">--</div>`;
     grid.appendChild(cell);
+
+    // Tap to switch timeframe
+    cell.addEventListener('click', () => switchTimeframe(tf));
 
     // Fetch in background
     fetchCandles(tf, 200).then(candles => {
       const r = analyze(candles);
       cache[tf] = candles;
-      cell.className = `ov-cell ${r.dirClass}`;
+      cell.className = `ov-cell ${r.dirClass}${tf === activeTF ? ' active-tf' : ''}`;
       cell.innerHTML = `
         <div class="ov-tf">${tf}</div>
         <div class="ov-pct">${Math.round(r.displayPct)}%</div>
@@ -874,14 +882,25 @@ async function refresh() {
 }
 
 // ── TABS ──
-document.getElementById('tabs').addEventListener('click', e => {
-  if (e.target.tagName !== 'BUTTON') return;
-  document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
-  e.target.classList.add('active');
-  activeTF = e.target.dataset.tf;
+// ── SHARED TIMEFRAME SWITCH ──
+function switchTimeframe(tf) {
+  activeTF = tf;
+  // Sync tab bar highlight
+  document.querySelectorAll('.tabs button').forEach(b => {
+    b.classList.toggle('active', b.dataset.tf === tf);
+  });
+  // Sync overview grid highlight
+  document.querySelectorAll('.ov-cell').forEach(c => {
+    c.classList.toggle('active-tf', c.dataset.tf === tf);
+  });
   document.getElementById('content').innerHTML = '<div class="loading">Analyzing...</div>';
   refresh();
   startAutoRefresh();
+}
+
+document.getElementById('tabs').addEventListener('click', e => {
+  if (e.target.tagName !== 'BUTTON') return;
+  switchTimeframe(e.target.dataset.tf);
 });
 
 let timer;
