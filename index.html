@@ -57,6 +57,16 @@ body{background:#06080c;color:#e0e0e0;font-family:-apple-system,BlinkMacSystemFo
   font-weight:700;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s}
 .tabs button.active{color:#fff;border-bottom-color:#4fc3f7}
 
+/* ── CANDLE COUNTDOWN ── */
+.countdown-bar{display:flex;align-items:center;gap:10px;padding:8px 16px;background:#0a0d12;border-bottom:1px solid #141820}
+.countdown-label{font-size:10px;text-transform:uppercase;letter-spacing:1px;opacity:.3;font-weight:600;white-space:nowrap}
+.countdown-track{flex:1;height:4px;border-radius:2px;background:#141820;overflow:hidden}
+.countdown-fill{height:100%;border-radius:2px;background:#4fc3f7;transition:width 1s linear}
+.countdown-time{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;color:#4fc3f7;min-width:70px;text-align:right;letter-spacing:.5px}
+.countdown-time.urgent{color:#ff9800;animation:countdownPulse 1s infinite}
+.countdown-time.critical{color:#ff5252;animation:countdownPulse .5s infinite}
+@keyframes countdownPulse{0%,100%{opacity:1}50%{opacity:.5}}
+
 /* ── MONEY FLOW BAR ── */
 .flow-section{padding:12px 16px 4px}
 .flow-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
@@ -195,6 +205,13 @@ body{background:#06080c;color:#e0e0e0;font-family:-apple-system,BlinkMacSystemFo
   <button data-tf="1d">1D</button>
   <button data-tf="1w">1W</button>
   <button data-tf="1M">1M</button>
+</div>
+
+<!-- CANDLE COUNTDOWN -->
+<div class="countdown-bar" id="countdownBar">
+  <span class="countdown-label" id="cdLabel">15m candle closes in</span>
+  <div class="countdown-track"><div class="countdown-fill" id="cdFill" style="width:100%"></div></div>
+  <span class="countdown-time" id="cdTime">--:--</span>
 </div>
 
 <!-- MAIN CONTENT -->
@@ -896,6 +913,7 @@ function switchTimeframe(tf) {
   document.getElementById('content').innerHTML = '<div class="loading">Analyzing...</div>';
   refresh();
   startAutoRefresh();
+  startCountdown();
 }
 
 document.getElementById('tabs').addEventListener('click', e => {
@@ -909,15 +927,93 @@ function startAutoRefresh() {
   timer = setInterval(refresh, REFRESH_MS[activeTF]);
 }
 
+// ══════════════════════════
+//  CANDLE COUNTDOWN TIMER
+// ══════════════════════════
+
+const TF_SECONDS = {
+  '15m': 15 * 60,
+  '1h': 60 * 60,
+  '4h': 4 * 60 * 60,
+  '1d': 24 * 60 * 60,
+  '1w': 7 * 24 * 60 * 60,
+  '1M': 30 * 24 * 60 * 60
+};
+
+const TF_LABELS = {
+  '15m': '15m', '1h': '1H', '4h': '4H', '1d': '1D', '1w': '1W', '1M': '1M'
+};
+
+let countdownInterval;
+
+function getTimeUntilCandleClose(tf) {
+  const now = Date.now();
+  const intervalMs = TF_SECONDS[tf] * 1000;
+  // Candles are aligned to epoch (Binance standard)
+  const candleStart = Math.floor(now / intervalMs) * intervalMs;
+  const candleEnd = candleStart + intervalMs;
+  const remaining = candleEnd - now;
+  return { remaining: Math.max(0, remaining), total: intervalMs };
+}
+
+function formatCountdown(ms) {
+  const totalSec = Math.floor(ms / 1000);
+  const days = Math.floor(totalSec / 86400);
+  const hrs = Math.floor((totalSec % 86400) / 3600);
+  const mins = Math.floor((totalSec % 3600) / 60);
+  const secs = totalSec % 60;
+  const pad = n => String(n).padStart(2, '0');
+
+  if (days > 0) return `${days}d ${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
+  if (hrs > 0) return `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
+  return `${pad(mins)}:${pad(secs)}`;
+}
+
+function updateCountdown() {
+  const { remaining, total } = getTimeUntilCandleClose(activeTF);
+  const pct = (remaining / total) * 100;
+  const timeStr = formatCountdown(remaining);
+
+  document.getElementById('cdLabel').textContent = `${TF_LABELS[activeTF]} candle closes in`;
+  document.getElementById('cdTime').textContent = timeStr;
+  document.getElementById('cdFill').style.width = `${pct}%`;
+
+  // Urgency colors
+  const timeEl = document.getElementById('cdTime');
+  const fillEl = document.getElementById('cdFill');
+  const pctLeft = remaining / total;
+  if (pctLeft < 0.05) {
+    timeEl.className = 'countdown-time critical';
+    fillEl.style.background = '#ff5252';
+  } else if (pctLeft < 0.15) {
+    timeEl.className = 'countdown-time urgent';
+    fillEl.style.background = '#ff9800';
+  } else {
+    timeEl.className = 'countdown-time';
+    fillEl.style.background = '#4fc3f7';
+  }
+
+  // Auto-refresh when candle closes
+  if (remaining < 1000 && remaining > 0) {
+    setTimeout(() => { refresh(); fetchAllTFOverview(); }, 1500);
+  }
+}
+
+function startCountdown() {
+  clearInterval(countdownInterval);
+  updateCountdown();
+  countdownInterval = setInterval(updateCountdown, 1000);
+}
+
 // ── INIT ──
 fetchAllTFOverview();
-refresh().then(startAutoRefresh);
+refresh().then(() => { startAutoRefresh(); startCountdown(); });
 
 // Refresh overview every 2 minutes
 setInterval(fetchAllTFOverview, 120000);
 
 document.addEventListener('visibilitychange', () => {
-  if (!document.hidden) { refresh(); startAutoRefresh(); fetchAllTFOverview(); }
+  if (!document.hidden) { refresh(); startAutoRefresh(); startCountdown(); fetchAllTFOverview(); }
 });
 
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
