@@ -412,7 +412,7 @@ function analyze(candles) {
   //  60% technical + 30% swarm + 10% sentiment
   // ══════════════════════════════════════════
   const sentimentBias = (fg.value - 50) / 100; // -0.5 to +0.5
-  const finalScore = techScore * 0.60 + swarmScore * 0.30 + sentimentBias * 0.10;
+  const finalScore = swarmScore * 0.60 + techScore * 0.30 + sentimentBias * 0.10;
 
   // Convert to confidence
   let bullish = ((finalScore + 1) / 2) * 100;
