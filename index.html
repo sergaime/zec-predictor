@@ -14,283 +14,193 @@
 body{background:#06080c;color:#e0e0e0;font-family:-apple-system,BlinkMacSystemFont,'SF Pro',system-ui,sans-serif;
   -webkit-font-smoothing:antialiased;overflow-x:hidden;padding:env(safe-area-inset-top) 0 calc(env(safe-area-inset-bottom) + 20px)}
 
-/* ── PREDICTION HUB ── */
-.prediction-hub{text-align:center;padding:24px 16px 16px;position:relative}
-.prediction-hub .symbol{font-size:13px;letter-spacing:3px;opacity:.4;text-transform:uppercase;font-weight:600}
-.prediction-hub .price-row{display:flex;align-items:baseline;justify-content:center;gap:10px;margin:6px 0}
-.prediction-hub .price-main{font-size:44px;font-weight:800;letter-spacing:-1px;transition:color .4s}
-.prediction-hub .price-change{font-size:15px;font-weight:600;padding:3px 8px;border-radius:6px}
-.prediction-hub .price-change.up{background:#00e67622;color:#00e676}
-.prediction-hub .price-change.down{background:#ff525222;color:#ff5252}
+/* ── HEADER ── */
+.header{text-align:center;padding:20px 16px 12px}
+.header .symbol{font-size:11px;letter-spacing:3px;opacity:.35;text-transform:uppercase;font-weight:600}
+.header .price-row{display:flex;align-items:baseline;justify-content:center;gap:8px;margin:4px 0}
+.header .price-main{font-size:38px;font-weight:800;letter-spacing:-1px;transition:color .4s}
+.header .price-change{font-size:14px;font-weight:600;padding:2px 7px;border-radius:5px}
+.header .price-change.up{background:#00e67622;color:#00e676}
+.header .price-change.down{background:#ff525222;color:#ff5252}
 
-/* ── THE BIG PREDICTION CIRCLE ── */
-.prediction-circle{margin:20px auto 10px;width:180px;height:180px;border-radius:50%;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  position:relative;transition:all .5s}
-.prediction-circle::before{content:'';position:absolute;inset:-3px;border-radius:50%;
-  background:conic-gradient(var(--ring-color) calc(var(--ring-pct) * 1%), #1a1a1a 0);
-  z-index:0;transition:all .6s}
-.prediction-circle::after{content:'';position:absolute;inset:3px;border-radius:50%;
-  background:#0d1017;z-index:1}
-.prediction-circle .inner{position:relative;z-index:2;text-align:center}
-.prediction-circle .pct{font-size:48px;font-weight:900;letter-spacing:-2px;line-height:1}
-.prediction-circle .direction{font-size:16px;font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-top:2px}
-.prediction-circle .confidence-label{font-size:10px;opacity:.4;margin-top:4px;letter-spacing:1px}
+/* ── FINAL VERDICT ── */
+.verdict-box{margin:0 16px 12px;padding:16px;border-radius:14px;text-align:center;
+  border:2px solid #222;transition:all .4s}
+.verdict-box.buy{border-color:#00e67666;background:#00e67610}
+.verdict-box.sell{border-color:#ff525266;background:#ff525210}
+.verdict-box.hold{border-color:#ffeb3b44;background:#ffeb3b08}
+.verdict-dir{font-size:28px;font-weight:900;letter-spacing:2px}
+.verdict-dir.buy{color:#00e676}
+.verdict-dir.sell{color:#ff5252}
+.verdict-dir.hold{color:#ffeb3b}
+.verdict-conf{font-size:13px;opacity:.5;margin-top:2px;font-weight:500}
+.verdict-reason{font-size:11px;opacity:.4;margin-top:6px;line-height:1.4}
 
-/* ── TREND WARNING ── */
-.warning-bar{display:none;margin:0 16px 10px;padding:12px 16px;border-radius:12px;
-  background:#ff980022;border:1px solid #ff980044;
-  animation:warningPulse 2s infinite}
-.warning-bar.active{display:flex;align-items:center;gap:10px}
-.warning-bar .warn-icon{font-size:22px;flex-shrink:0}
-.warning-bar .warn-text{font-size:13px;font-weight:600;color:#ffab40;line-height:1.3}
-.warning-bar .warn-sub{font-size:11px;opacity:.6;color:#ffab40;margin-top:2px}
+/* ── WARNING ── */
+.warning-bar{display:none;margin:0 16px 10px;padding:10px 14px;border-radius:10px;
+  background:#ff980022;border:1px solid #ff980044;animation:pulse 2s infinite}
+.warning-bar.active{display:flex;align-items:center;gap:8px}
+.warning-bar .warn-icon{font-size:18px;flex-shrink:0}
+.warning-bar .warn-text{font-size:12px;font-weight:600;color:#ffab40;line-height:1.3}
 .warning-bar.reversal-up{background:#00e67618;border-color:#00e67644}
-.warning-bar.reversal-up .warn-text,.warning-bar.reversal-up .warn-sub{color:#69f0ae}
+.warning-bar.reversal-up .warn-text{color:#69f0ae}
 .warning-bar.reversal-down{background:#ff174418;border-color:#ff174444}
-.warning-bar.reversal-down .warn-text,.warning-bar.reversal-down .warn-sub{color:#ff8a80}
-@keyframes warningPulse{0%,100%{opacity:1}50%{opacity:.7}}
+.warning-bar.reversal-down .warn-text{color:#ff8a80}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
 
-/* ── TABS ── */
-.tabs{display:flex;border-bottom:1px solid #141820;background:#0a0d12;overflow-x:auto;-webkit-overflow-scrolling:touch}
-.tabs button{flex:1;min-width:55px;padding:12px 4px;background:none;border:none;color:#555;font-size:13px;
-  font-weight:700;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s}
-.tabs button.active{color:#fff;border-bottom-color:#4fc3f7}
+/* ── TIMEFRAME BUTTONS (the main grid) ── */
+.tf-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 16px 10px}
+.tf-btn{position:relative;padding:14px 8px;border-radius:12px;text-align:center;
+  border:1.5px solid #1a1f2e;background:#0d1017;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;transition:all .2s;user-select:none}
+.tf-btn:active{transform:scale(0.95)}
+.tf-btn.active{border-color:#4fc3f7;box-shadow:0 0 10px #4fc3f722}
+.tf-btn.buy{border-color:#00e67644;background:#00e67608}
+.tf-btn.sell{border-color:#ff525244;background:#ff525208}
+.tf-btn.hold{border-color:#ffeb3b33;background:#ffeb3b06}
+.tf-label{font-size:11px;opacity:.4;font-weight:600;letter-spacing:1px}
+.tf-dir{font-size:18px;font-weight:900;letter-spacing:1px;margin:4px 0 2px}
+.tf-dir.buy{color:#00e676}
+.tf-dir.sell{color:#ff5252}
+.tf-dir.hold{color:#ffeb3b}
+.tf-conf{font-size:11px;opacity:.4;font-weight:600}
+.tf-countdown{font-size:9px;opacity:.3;margin-top:4px;font-variant-numeric:tabular-nums;font-weight:500}
 
-/* ── CANDLE COUNTDOWN ── */
-.countdown-bar{display:flex;align-items:center;gap:10px;padding:8px 16px;background:#0a0d12;border-bottom:1px solid #141820}
-.countdown-label{font-size:10px;text-transform:uppercase;letter-spacing:1px;opacity:.3;font-weight:600;white-space:nowrap}
-.countdown-track{flex:1;height:4px;border-radius:2px;background:#141820;overflow:hidden}
-.countdown-fill{height:100%;border-radius:2px;background:#4fc3f7;transition:width 1s linear}
-.countdown-time{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;color:#4fc3f7;min-width:70px;text-align:right;letter-spacing:.5px}
-.countdown-time.urgent{color:#ff9800;animation:countdownPulse 1s infinite}
-.countdown-time.critical{color:#ff5252;animation:countdownPulse .5s infinite}
-@keyframes countdownPulse{0%,100%{opacity:1}50%{opacity:.5}}
+/* ── PRICE TARGETS (compact) ── */
+.targets{margin:0 16px 10px;padding:12px;border-radius:12px;background:#0d1017;border:1px solid #141820}
+.targets-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.targets-title{font-size:10px;text-transform:uppercase;letter-spacing:1px;opacity:.3;font-weight:600}
+.targets-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.target-pill{text-align:center;padding:8px;border-radius:8px}
+.target-pill.high{background:#00e67610;border:1px solid #00e67622}
+.target-pill.low{background:#ff525210;border:1px solid #ff525222}
+.tp-label{font-size:9px;opacity:.4;text-transform:uppercase;letter-spacing:.5px}
+.tp-price{font-size:16px;font-weight:800;margin:2px 0}
+.tp-pct{font-size:11px;font-weight:600}
+.target-pill.high .tp-price,.target-pill.high .tp-pct{color:#00e676}
+.target-pill.low .tp-price,.target-pill.low .tp-pct{color:#ff5252}
 
-/* ── MONEY FLOW BAR ── */
-.flow-section{padding:12px 16px 4px}
-.flow-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-.flow-title{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;opacity:.4;font-weight:600}
-.flow-value{font-size:13px;font-weight:700}
-.flow-bar{height:8px;border-radius:4px;background:#1a1a2a;overflow:hidden;position:relative}
-.flow-fill{height:100%;border-radius:4px;transition:width .6s,background .4s;position:absolute;left:0;top:0}
-.flow-labels{display:flex;justify-content:space-between;margin-top:4px}
-.flow-labels span{font-size:10px;opacity:.3;font-weight:500}
-.flow-meter{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px}
-.flow-pill{text-align:center;padding:8px 6px;border-radius:10px;background:#111520;border:1px solid #1a1f2e}
-.flow-pill .fp-label{font-size:10px;opacity:.4;text-transform:uppercase;letter-spacing:.5px}
-.flow-pill .fp-val{font-size:16px;font-weight:700;margin-top:2px}
+/* ── DETAIL SECTION ── */
+.detail-toggle{display:block;width:calc(100% - 32px);margin:0 auto 10px;padding:10px;
+  background:#0d1017;border:1px solid #141820;border-radius:10px;color:#4fc3f7;
+  font-size:12px;font-weight:600;cursor:pointer;text-align:center;letter-spacing:.5px}
+.detail-toggle:active{background:#111520}
+.detail-panel{display:none;padding:0 16px 10px}
+.detail-panel.open{display:block}
+.detail-card{background:#0d1017;border-radius:12px;padding:12px;margin-bottom:8px;border:1px solid #141820}
+.detail-title{font-size:10px;text-transform:uppercase;letter-spacing:1px;opacity:.3;font-weight:600;margin-bottom:8px}
+.agent-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #111520}
+.agent-row:last-child{border:none}
+.agent-left{display:flex;align-items:center;gap:6px}
+.agent-emoji{font-size:14px}
+.agent-name{font-size:12px;font-weight:500;opacity:.7}
+.agent-signal{font-size:10px;font-weight:800;padding:2px 8px;border-radius:10px;letter-spacing:.5px}
+.agent-signal.buy{background:#00e67618;color:#00e676}
+.agent-signal.sell{background:#ff525218;color:#ff5252}
+.agent-signal.hold{background:#ffeb3b18;color:#ffeb3b}
 
-/* ── SIGNAL FACTORS ── */
-.cards{padding:10px 16px}
-.card{background:#0d1017;border-radius:14px;padding:14px;margin-bottom:10px;border:1px solid #141820}
-.card-title{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;opacity:.35;margin-bottom:10px;font-weight:600}
-.indicator-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #111520}
-.indicator-row:last-child{border:none}
-.ind-name{font-size:14px;font-weight:500}
-.ind-value{font-size:12px;opacity:.45;margin-left:auto;margin-right:12px;font-variant-numeric:tabular-nums}
-.ind-signal{font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px;min-width:52px;text-align:center;letter-spacing:.5px}
-.ind-signal.buy{background:#00e67618;color:#00e676}
-.ind-signal.sell{background:#ff525218;color:#ff5252}
-.ind-signal.neutral{background:#ffffff08;color:#555}
-.ind-weight{font-size:10px;opacity:.2;margin-left:6px;font-weight:500}
+/* ── FEAR & GREED COMPACT ── */
+.fg-row{display:flex;align-items:center;gap:8px;padding:5px 0}
+.fg-bar{flex:1;height:6px;border-radius:3px;background:linear-gradient(90deg,#ff5252,#ff9800,#ffeb3b,#69f0ae,#00e676);position:relative}
+.fg-needle{position:absolute;top:-2px;width:3px;height:10px;border-radius:1px;background:#fff;box-shadow:0 0 4px #fff8;transition:left .4s}
+.fg-val{font-size:12px;font-weight:700;min-width:24px;text-align:right}
+.fg-mood{font-size:10px;font-weight:600;opacity:.6;min-width:40px}
 
-/* ── SCORE BREAKDOWN ── */
-.score-breakdown{display:flex;align-items:center;gap:10px;margin-top:8px}
-.score-bar-track{flex:1;height:6px;border-radius:3px;background:#111520;overflow:hidden;position:relative}
-.score-bar-buy{position:absolute;left:50%;height:100%;border-radius:0 3px 3px 0;background:#00e676;transition:width .5s}
-.score-bar-sell{position:absolute;right:50%;height:100%;border-radius:3px 0 0 3px;background:#ff5252;transition:width .5s}
-.score-label{font-size:11px;font-weight:700;min-width:35px;text-align:center}
-
-/* ── OHLC ── */
-.ohlc{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center}
-.ohlc div{font-size:10px;opacity:.4;text-transform:uppercase;letter-spacing:.5px}
-.ohlc span{display:block;font-size:15px;font-weight:700;opacity:1;margin-top:2px;font-variant-numeric:tabular-nums}
-
-/* ── MULTI-TF OVERVIEW ── */
-.overview-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:10px 16px}
-.ov-cell{background:#0d1017;border-radius:12px;padding:12px 8px;text-align:center;border:1px solid #141820;
-  cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .15s,border-color .2s,box-shadow .2s;
-  user-select:none;-webkit-user-select:none}
-.ov-cell:active{transform:scale(0.94)}
-.ov-cell.active-tf{border-color:#4fc3f7 !important;box-shadow:0 0 12px #4fc3f722}
-.ov-cell .ov-tf{font-size:11px;opacity:.4;font-weight:600;letter-spacing:1px}
-.ov-cell .ov-pct{font-size:22px;font-weight:800;margin:4px 0}
-.ov-cell .ov-dir{font-size:10px;font-weight:700;letter-spacing:1px}
-.ov-cell.buy{border-color:#00e67633}.ov-cell.buy .ov-pct,.ov-cell.buy .ov-dir{color:#00e676}
-.ov-cell.sell{border-color:#ff525233}.ov-cell.sell .ov-pct,.ov-cell.sell .ov-dir{color:#ff5252}
-.ov-cell.neutral .ov-pct,.ov-cell.neutral .ov-dir{color:#666}
-
-/* ── PRICE TARGETS ── */
-.targets-card{background:#0d1017;border-radius:14px;padding:16px;margin:10px 16px;border:1px solid #141820}
-.targets-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-.targets-title{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;opacity:.35;font-weight:600}
-.targets-dir{font-size:11px;font-weight:800;padding:2px 8px;border-radius:4px;letter-spacing:1px}
-.targets-dir.buy{background:#00e67618;color:#00e676}
-.targets-dir.sell{background:#ff525218;color:#ff5252}
-.targets-dir.neutral{background:#ffffff08;color:#666}
-
-.target-visual{position:relative;margin:0 0 8px;padding:0 4px}
-.target-track{position:relative;height:120px;display:flex;flex-direction:column;justify-content:space-between;
-  margin-left:90px;margin-right:14px}
-.target-line{display:flex;align-items:center;gap:8px;position:relative;height:24px}
-.target-label{font-size:10px;opacity:.35;text-transform:uppercase;letter-spacing:.5px;width:76px;text-align:right;
-  position:absolute;left:-84px;font-weight:500}
-.target-bar{flex:1;height:2px;border-radius:1px;position:relative}
-.target-price{font-size:14px;font-weight:700;min-width:70px;text-align:right;font-variant-numeric:tabular-nums}
-.target-pct{font-size:10px;opacity:.4;margin-left:4px;font-weight:500}
-
-.target-line.high .target-bar{background:linear-gradient(90deg,#00e67600,#00e67666)}
-.target-line.mid .target-bar{background:linear-gradient(90deg,#00e67600,#00e67633)}
-.target-line.current .target-bar{background:#4fc3f7;height:3px;box-shadow:0 0 8px #4fc3f744}
-.target-line.current .target-price{color:#4fc3f7}
-.target-line.midlow .target-bar{background:linear-gradient(90deg,#ff525200,#ff525233)}
-.target-line.low .target-bar{background:linear-gradient(90deg,#ff525200,#ff525266)}
-
-.target-line.high .target-price{color:#00e676}
-.target-line.mid .target-price{color:#69f0ae}
-.target-line.midlow .target-price{color:#ff8a80}
-.target-line.low .target-price{color:#ff5252}
-
-.target-method{font-size:10px;opacity:.25;text-align:center;margin-top:8px;letter-spacing:.3px}
-
-/* ── POTENTIAL GAIN/LOSS PILLS ── */
-.potential-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
-.potential-pill{text-align:center;padding:10px 8px;border-radius:10px;border:1px solid #1a1f2e}
-.potential-pill.gain{background:#00e67610;border-color:#00e67622}
-.potential-pill.loss{background:#ff525210;border-color:#ff525222}
-.potential-pill .pp-label{font-size:10px;opacity:.4;text-transform:uppercase;letter-spacing:.5px}
-.potential-pill .pp-price{font-size:18px;font-weight:800;margin:3px 0 1px}
-.potential-pill .pp-pct{font-size:12px;font-weight:600}
-.potential-pill.gain .pp-price,.potential-pill.gain .pp-pct{color:#00e676}
-.potential-pill.loss .pp-price,.potential-pill.loss .pp-pct{color:#ff5252}
-
-/* ── SWARM INTELLIGENCE (MiroFish-inspired) ── */
-.swarm-card{background:#0d1017;border-radius:14px;padding:16px;margin:10px 16px;border:1px solid #141820;position:relative;overflow:hidden}
-.swarm-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,#7c4dff,#4fc3f7,#00e676,#ff9800,#ff5252);opacity:.4}
-.swarm-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.swarm-title{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;opacity:.4;font-weight:600}
-.swarm-badge{font-size:10px;padding:2px 8px;border-radius:4px;background:#7c4dff22;color:#b388ff;font-weight:700;letter-spacing:.5px}
-.swarm-consensus{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding:10px;background:#080b10;border-radius:10px}
-.swarm-ring{width:56px;height:56px;border-radius:50%;position:relative;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center}
-.swarm-ring::before{content:'';position:absolute;inset:-2px;border-radius:50%;
-  background:conic-gradient(var(--swarm-color) calc(var(--swarm-agree) * 1%), #1a1a2a 0)}
-.swarm-ring::after{content:'';position:absolute;inset:3px;border-radius:50%;background:#080b10}
-.swarm-ring-inner{position:relative;z-index:1;text-align:center}
-.swarm-ring-pct{font-size:16px;font-weight:900;line-height:1}
-.swarm-ring-label{font-size:7px;opacity:.5;text-transform:uppercase;letter-spacing:.5px}
-.swarm-consensus-text{flex:1}
-.swarm-verdict{font-size:15px;font-weight:800;letter-spacing:.5px;margin-bottom:2px}
-.swarm-sub{font-size:11px;opacity:.45;line-height:1.3}
-.swarm-flip-alert{display:none;margin-bottom:10px;padding:8px 12px;border-radius:8px;
-  background:#ff980018;border:1px solid #ff980033;font-size:11px;color:#ffab40;font-weight:600;
-  animation:warningPulse 2s infinite}
-.swarm-flip-alert.active{display:flex;align-items:center;gap:8px}
-.swarm-agents{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.swarm-agent{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;
-  background:#0a0e14;border:1px solid #141820;transition:border-color .3s}
-.swarm-agent.buy-vote{border-color:#00e67633}
-.swarm-agent.sell-vote{border-color:#ff525233}
-.swarm-agent.hold-vote{border-color:#ffffff11}
-.agent-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-size:14px;flex-shrink:0;background:#111520}
-.agent-info{flex:1;min-width:0}
-.agent-name{font-size:10px;font-weight:700;letter-spacing:.3px;opacity:.6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.agent-vote{font-size:11px;font-weight:800;letter-spacing:.5px}
-.agent-vote.buy{color:#00e676}
-.agent-vote.sell{color:#ff5252}
-.agent-vote.hold{color:#666}
-.agent-conf{font-size:10px;opacity:.3;font-weight:500}
-.swarm-history{display:flex;gap:2px;margin-top:10px;height:24px;align-items:flex-end}
-.swarm-history-bar{flex:1;border-radius:2px 2px 0 0;min-height:3px;transition:height .3s,background .3s}
-
-/* ── FEAR & GREED ── */
-.fg-section{padding:10px 16px 4px}
-.fg-bar-wrap{display:flex;align-items:center;gap:10px}
-.fg-bar{flex:1;height:10px;border-radius:5px;background:linear-gradient(90deg,#ff5252,#ff9800,#ffeb3b,#69f0ae,#00e676);position:relative}
-.fg-needle{position:absolute;top:-3px;width:4px;height:16px;border-radius:2px;background:#fff;box-shadow:0 0 6px #fff8;transition:left .6s}
-.fg-value{font-size:16px;font-weight:800;min-width:32px;text-align:right}
-.fg-label-row{display:flex;justify-content:space-between;margin-top:3px}
-.fg-label-row span{font-size:9px;opacity:.3;font-weight:500}
-.fg-mood{text-align:center;margin-top:6px;font-size:12px;font-weight:700;letter-spacing:.5px}
-
-.updated-footer{text-align:center;padding:12px;font-size:10px;opacity:.25;letter-spacing:.5px}
-.loading{text-align:center;padding:60px 20px;opacity:.3;font-size:14px}
-.error-msg{text-align:center;padding:20px;color:#ff5252;font-size:13px}
+.updated-footer{text-align:center;padding:8px;font-size:9px;opacity:.2;letter-spacing:.5px}
+.loading{text-align:center;padding:40px 20px;opacity:.3;font-size:13px}
 </style>
 </head>
 <body>
 
-<!-- PREDICTION HUB -->
-<div class="prediction-hub">
+<!-- HEADER -->
+<div class="header">
   <div class="symbol">Zcash ZEC / USDT</div>
   <div class="price-row">
     <div class="price-main" id="price">--</div>
     <div class="price-change up" id="change">--</div>
   </div>
-  <div class="prediction-circle" id="predCircle" style="--ring-color:#555;--ring-pct:0">
-    <div class="inner">
-      <div class="pct" id="predPct">--</div>
-      <div class="direction" id="predDir">LOADING</div>
-      <div class="confidence-label">CONFIDENCE</div>
+</div>
+
+<!-- FINAL VERDICT -->
+<div class="verdict-box" id="verdict">
+  <div class="verdict-dir" id="verdictDir">LOADING</div>
+  <div class="verdict-conf" id="verdictConf">Analyzing market...</div>
+  <div class="verdict-reason" id="verdictReason"></div>
+</div>
+
+<!-- WARNING -->
+<div class="warning-bar" id="warningBar">
+  <div class="warn-icon" id="warnIcon"></div>
+  <div class="warn-text" id="warnText"></div>
+</div>
+
+<!-- TIMEFRAME BUTTONS -->
+<div class="tf-grid" id="tfGrid"></div>
+
+<!-- PRICE TARGETS -->
+<div class="targets" id="targets">
+  <div class="targets-header">
+    <span class="targets-title">Price Targets</span>
+  </div>
+  <div class="targets-row">
+    <div class="target-pill high">
+      <div class="tp-label">Can Go Up To</div>
+      <div class="tp-price" id="tpHigh">--</div>
+      <div class="tp-pct" id="tpHighPct">--</div>
+    </div>
+    <div class="target-pill low">
+      <div class="tp-label">Can Drop To</div>
+      <div class="tp-price" id="tpLow">--</div>
+      <div class="tp-pct" id="tpLowPct">--</div>
     </div>
   </div>
 </div>
 
-<!-- TREND WARNING -->
-<div class="warning-bar" id="warningBar">
-  <div class="warn-icon" id="warnIcon"></div>
-  <div>
-    <div class="warn-text" id="warnText"></div>
-    <div class="warn-sub" id="warnSub"></div>
+<!-- SHOW/HIDE DETAILS -->
+<button class="detail-toggle" id="detailToggle">Show Details (9 Indicators + 8 Agents)</button>
+<div class="detail-panel" id="detailPanel">
+  <div class="detail-card">
+    <div class="detail-title">Swarm Agents</div>
+    <div id="agentList"></div>
+  </div>
+  <div class="detail-card">
+    <div class="detail-title">Technical Indicators</div>
+    <div id="indicatorList"></div>
+  </div>
+  <div class="detail-card">
+    <div class="detail-title">Market Fear & Greed</div>
+    <div class="fg-row">
+      <span class="fg-mood" id="fgMood">--</span>
+      <div class="fg-bar"><div class="fg-needle" id="fgNeedle" style="left:50%"></div></div>
+      <span class="fg-val" id="fgVal">--</span>
+    </div>
   </div>
 </div>
 
-<!-- TIMEFRAME TABS -->
-<div class="tabs" id="tabs">
-  <button data-tf="15m" class="active">15m</button>
-  <button data-tf="1h">1H</button>
-  <button data-tf="4h">4H</button>
-  <button data-tf="1d">1D</button>
-  <button data-tf="1w">1W</button>
-  <button data-tf="1M">1M</button>
-</div>
-
-<!-- CANDLE COUNTDOWN -->
-<div class="countdown-bar" id="countdownBar">
-  <span class="countdown-label" id="cdLabel">15m candle closes in</span>
-  <div class="countdown-track"><div class="countdown-fill" id="cdFill" style="width:100%"></div></div>
-  <span class="countdown-time" id="cdTime">--:--</span>
-</div>
-
-<!-- MAIN CONTENT -->
-<div id="content"><div class="loading">Fetching market data...</div></div>
+<div class="updated-footer" id="updated">Loading...</div>
 
 <script>
-// ════════════════════════════════════════════════
-//  ZEC PREDICTION ENGINE
-//  Composite scoring inspired by:
-//  - Freqtrade FreqAI LSTM aggregate scoring
-//  - Polymarket multi-model ensemble approach
-//  - Money Flow Index (MFI) for smart money tracking
-// ════════════════════════════════════════════════
+// ════════════════════════════════════════
+//  ZEC UNIFIED PREDICTION ENGINE
+//  Single consensus from 9 indicators +
+//  8 swarm agents + fear/greed
+// ════════════════════════════════════════
 
 const SYMBOL = 'ZECUSDT';
 const TIMEFRAMES = ['15m','1h','4h','1d','1w','1M'];
-const REFRESH_MS = { '15m':20000, '1h':45000, '4h':120000, '1d':300000, '1w':600000, '1M':600000 };
+const TF_DISPLAY = {'15m':'15m','1h':'1H','4h':'4H','1d':'1D','1w':'1W','1M':'1M'};
+const REFRESH_MS = {'15m':20000,'1h':45000,'4h':120000,'1d':300000,'1w':600000,'1M':600000};
+const TF_SECONDS = {'15m':900,'1h':3600,'4h':14400,'1d':86400,'1w':604800,'1M':2592000};
 let activeTF = '15m';
 let cache = {};
-let prevPredictions = {};
+let insideAnalyze = false;
 
 // ── BINANCE API ──
 async function fetchCandles(tf, limit=200) {
-  const url = `https://api.binance.com/api/v3/klines?symbol=${SYMBOL}&interval=${tf}&limit=${limit}`;
-  const r = await fetch(url);
+  const r = await fetch(`https://api.binance.com/api/v3/klines?symbol=${SYMBOL}&interval=${tf}&limit=${limit}`);
   if (!r.ok) throw new Error(`API ${r.status}`);
   return (await r.json()).map(c => ({
-    time: c[0], open: +c[1], high: +c[2], low: +c[3], close: +c[4], volume: +c[5]
+    time:c[0], open:+c[1], high:+c[2], low:+c[3], close:+c[4], volume:+c[5]
   }));
 }
 
@@ -298,1099 +208,395 @@ async function fetchCandles(tf, limit=200) {
 //  TECHNICAL INDICATORS
 // ══════════════════════════
 
-function ema(data, period) {
-  const k = 2 / (period + 1), r = [data[0]];
-  for (let i = 1; i < data.length; i++) r.push(data[i] * k + r[i-1] * (1 - k));
-  return r;
-}
+function ema(d,p){const k=2/(p+1),r=[d[0]];for(let i=1;i<d.length;i++)r.push(d[i]*k+r[i-1]*(1-k));return r}
+function sma(d,p){const r=[];for(let i=0;i<d.length;i++){if(i<p-1){r.push(null);continue}let s=0;for(let j=i-p+1;j<=i;j++)s+=d[j];r.push(s/p)}return r}
 
-function sma(data, period) {
-  const r = [];
-  for (let i = 0; i < data.length; i++) {
-    if (i < period - 1) { r.push(null); continue; }
-    let s = 0; for (let j = i - period + 1; j <= i; j++) s += data[j];
-    r.push(s / period);
-  }
-  return r;
-}
+function calcRSI(c,p=14){const g=[],l=[];for(let i=1;i<c.length;i++){const d=c[i]-c[i-1];g.push(d>0?d:0);l.push(d<0?-d:0)}
+let ag=g.slice(0,p).reduce((a,b)=>a+b,0)/p,al=l.slice(0,p).reduce((a,b)=>a+b,0)/p;
+const r=new Array(p).fill(null);r.push(al===0?100:100-100/(1+ag/al));
+for(let i=p;i<g.length;i++){ag=(ag*(p-1)+g[i])/p;al=(al*(p-1)+l[i])/p;r.push(al===0?100:100-100/(1+ag/al))}return r}
 
-function calcRSI(closes, period=14) {
-  const gains = [], losses = [];
-  for (let i = 1; i < closes.length; i++) {
-    const d = closes[i] - closes[i-1];
-    gains.push(d > 0 ? d : 0);
-    losses.push(d < 0 ? -d : 0);
-  }
-  let ag = gains.slice(0, period).reduce((a,b)=>a+b,0) / period;
-  let al = losses.slice(0, period).reduce((a,b)=>a+b,0) / period;
-  const rsi = new Array(period).fill(null);
-  rsi.push(al === 0 ? 100 : 100 - 100/(1+ag/al));
-  for (let i = period; i < gains.length; i++) {
-    ag = (ag * (period-1) + gains[i]) / period;
-    al = (al * (period-1) + losses[i]) / period;
-    rsi.push(al === 0 ? 100 : 100 - 100/(1+ag/al));
-  }
-  return rsi;
-}
+function calcMACD(c){const e12=ema(c,12),e26=ema(c,26),ml=e12.map((v,i)=>v-e26[i]),sig=ema(ml,9);
+return{macdLine:ml,signal:sig,histogram:ml.map((v,i)=>v-sig[i])}}
 
-function calcMACD(closes) {
-  const e12 = ema(closes, 12), e26 = ema(closes, 26);
-  const ml = e12.map((v,i) => v - e26[i]);
-  const sig = ema(ml, 9);
-  return { macdLine: ml, signal: sig, histogram: ml.map((v,i) => v - sig[i]) };
-}
+function calcBB(c,p=20,m=2){const mid=sma(c,p),u=[],l=[];
+for(let i=0;i<c.length;i++){if(mid[i]===null){u.push(null);l.push(null);continue}
+let s=0;for(let j=i-p+1;j<=i;j++)s+=(c[j]-mid[i])**2;const std=Math.sqrt(s/p);
+u.push(mid[i]+m*std);l.push(mid[i]-m*std)}return{upper:u,mid,lower:l}}
 
-function calcBB(closes, period=20, mult=2) {
-  const mid = sma(closes, period), upper = [], lower = [];
-  for (let i = 0; i < closes.length; i++) {
-    if (mid[i] === null) { upper.push(null); lower.push(null); continue; }
-    let s = 0; for (let j = i - period + 1; j <= i; j++) s += (closes[j] - mid[i]) ** 2;
-    const std = Math.sqrt(s / period);
-    upper.push(mid[i] + mult * std); lower.push(mid[i] - mult * std);
-  }
-  return { upper, mid, lower };
-}
+function calcMFI(candles,p=14){const tp=candles.map(c=>(c.high+c.low+c.close)/3);
+const rf=tp.map((t,i)=>t*candles[i].volume);const mfi=new Array(p+1).fill(null);
+for(let i=p+1;i<tp.length;i++){let pos=0,neg=0;
+for(let j=i-p+1;j<=i;j++){if(tp[j]>tp[j-1])pos+=rf[j];else if(tp[j]<tp[j-1])neg+=rf[j]}
+mfi.push(100-(100/(1+(neg===0?100:pos/neg))))}return mfi}
 
-// ── MONEY FLOW INDEX (MFI) ── the key addition
-function calcMFI(candles, period=14) {
-  const tp = candles.map(c => (c.high + c.low + c.close) / 3);
-  const rawFlow = tp.map((t, i) => t * candles[i].volume);
-  const mfi = new Array(period + 1).fill(null);
-  for (let i = period + 1; i < tp.length; i++) {
-    let posFlow = 0, negFlow = 0;
-    for (let j = i - period + 1; j <= i; j++) {
-      if (tp[j] > tp[j-1]) posFlow += rawFlow[j];
-      else if (tp[j] < tp[j-1]) negFlow += rawFlow[j];
-    }
-    const ratio = negFlow === 0 ? 100 : posFlow / negFlow;
-    mfi.push(100 - (100 / (1 + ratio)));
-  }
-  return mfi;
-}
+function calcOBV(candles){const o=[0];for(let i=1;i<candles.length;i++){
+if(candles[i].close>candles[i-1].close)o.push(o[i-1]+candles[i].volume);
+else if(candles[i].close<candles[i-1].close)o.push(o[i-1]-candles[i].volume);
+else o.push(o[i-1])}return o}
 
-// ── ON-BALANCE VOLUME (OBV) ──
-function calcOBV(candles) {
-  const obv = [0];
-  for (let i = 1; i < candles.length; i++) {
-    if (candles[i].close > candles[i-1].close) obv.push(obv[i-1] + candles[i].volume);
-    else if (candles[i].close < candles[i-1].close) obv.push(obv[i-1] - candles[i].volume);
-    else obv.push(obv[i-1]);
-  }
-  return obv;
-}
+function calcADX(candles,p=14){if(candles.length<p*2+1)return{adx:new Array(candles.length).fill(null),pdi:[],ndi:[]};
+const tr=[],dp=[],dm=[];for(let i=1;i<candles.length;i++){const h=candles[i].high,l=candles[i].low,pc=candles[i-1].close;
+tr.push(Math.max(h-l,Math.abs(h-pc),Math.abs(l-pc)));const u=h-candles[i-1].high,d=candles[i-1].low-l;
+dp.push(u>d&&u>0?u:0);dm.push(d>u&&d>0?d:0)}
+const sm=a=>{const r=[a.slice(0,p).reduce((x,y)=>x+y,0)];for(let i=p;i<a.length;i++)r.push(r[r.length-1]-r[r.length-1]/p+a[i]);return r};
+const sTR=sm(tr),sDMP=sm(dp),sDMM=sm(dm);
+const pdi=sTR.map((t,i)=>t===0?0:(sDMP[i]/t)*100),ndi=sTR.map((t,i)=>t===0?0:(sDMM[i]/t)*100);
+const dx=pdi.map((p2,i)=>(p2+ndi[i])===0?0:Math.abs(p2-ndi[i])/(p2+ndi[i])*100);
+const adx=[dx.slice(0,p).reduce((a,b)=>a+b,0)/p];
+for(let i=p;i<dx.length;i++)adx.push((adx[adx.length-1]*(p-1)+dx[i])/p);
+const pad=candles.length-adx.length;
+return{adx:new Array(pad).fill(null).concat(adx),pdi:new Array(pad).fill(null).concat(pdi),ndi:new Array(pad).fill(null).concat(ndi)}}
 
-// ── ADX (Average Directional Index) ──
-function calcADX(candles, period=14) {
-  if (candles.length < period * 2 + 1) return { adx: new Array(candles.length).fill(null), pdi: [], ndi: [] };
-  const trList = [], dmPlus = [], dmMinus = [];
-  for (let i = 1; i < candles.length; i++) {
-    const h = candles[i].high, l = candles[i].low, pc = candles[i-1].close;
-    trList.push(Math.max(h - l, Math.abs(h - pc), Math.abs(l - pc)));
-    const up = h - candles[i-1].high, dn = candles[i-1].low - l;
-    dmPlus.push(up > dn && up > 0 ? up : 0);
-    dmMinus.push(dn > up && dn > 0 ? dn : 0);
-  }
-  const smoothed = (arr) => {
-    const r = [arr.slice(0, period).reduce((a,b)=>a+b,0)];
-    for (let i = period; i < arr.length; i++) r.push(r[r.length-1] - r[r.length-1]/period + arr[i]);
-    return r;
-  };
-  const sTR = smoothed(trList), sDMP = smoothed(dmPlus), sDMM = smoothed(dmMinus);
-  const pdi = sTR.map((t,i) => t === 0 ? 0 : (sDMP[i] / t) * 100);
-  const ndi = sTR.map((t,i) => t === 0 ? 0 : (sDMM[i] / t) * 100);
-  const dx = pdi.map((p,i) => (p + ndi[i]) === 0 ? 0 : Math.abs(p - ndi[i]) / (p + ndi[i]) * 100);
-  const adxSmoothed = [dx.slice(0, period).reduce((a,b)=>a+b,0) / period];
-  for (let i = period; i < dx.length; i++) adxSmoothed.push((adxSmoothed[adxSmoothed.length-1] * (period-1) + dx[i]) / period);
-  const pad = candles.length - adxSmoothed.length;
-  return {
-    adx: new Array(pad).fill(null).concat(adxSmoothed),
-    pdi: new Array(pad).fill(null).concat(pdi),
-    ndi: new Array(pad).fill(null).concat(ndi)
-  };
-}
+function calcVWAP(candles,lb=20){const e=candles.length,s=Math.max(0,e-lb);let cv=0,cvo=0;
+for(let i=s;i<e;i++){cv+=(candles[i].high+candles[i].low+candles[i].close)/3*candles[i].volume;cvo+=candles[i].volume}
+return cvo===0?candles[e-1].close:cv/cvo}
 
-// ── VWAP (Volume Weighted Average Price) ──
-function calcVWAP(candles, lookback=20) {
-  const end = candles.length;
-  const start = Math.max(0, end - lookback);
-  let cumTPV = 0, cumVol = 0;
-  for (let i = start; i < end; i++) {
-    const tp = (candles[i].high + candles[i].low + candles[i].close) / 3;
-    cumTPV += tp * candles[i].volume;
-    cumVol += candles[i].volume;
-  }
-  return cumVol === 0 ? candles[end-1].close : cumTPV / cumVol;
-}
-
-// ══════════════════════════════════════
-//  PRICE TARGET ENGINE
-//  Uses 4 methods: ATR, Fibonacci,
-//  Support/Resistance, Bollinger Bands
-// ══════════════════════════════════════
-
-function calcPriceTargets(candles, currentPrice, direction, adxVal, bb, ema50) {
+// ── PRICE TARGETS ──
+function calcTargets(candles, price, adxVal, bb) {
   const L = candles.length - 1;
-
-  // 1. ATR-based targets (Average True Range)
-  const atrPeriod = 14;
   let atrSum = 0;
-  for (let i = Math.max(1, L - atrPeriod + 1); i <= L; i++) {
-    const h = candles[i].high, l = candles[i].low, pc = candles[i-1].close;
-    atrSum += Math.max(h - l, Math.abs(h - pc), Math.abs(l - pc));
+  for (let i = Math.max(1, L-13); i <= L; i++) {
+    const h=candles[i].high,l=candles[i].low,pc=candles[i-1].close;
+    atrSum += Math.max(h-l,Math.abs(h-pc),Math.abs(l-pc));
   }
-  const atr = atrSum / atrPeriod;
-  // Conservative: 1.5x ATR, Aggressive: 2.5x ATR
-  const atrTargetUp1 = currentPrice + atr * 1.5;
-  const atrTargetUp2 = currentPrice + atr * 2.5;
-  const atrTargetDown1 = currentPrice - atr * 1.5;
-  const atrTargetDown2 = currentPrice - atr * 2.5;
+  const atr = atrSum / 14;
+  const str = adxVal > 25 ? 1.2 : 1.0;
+  const bbU = bb.upper[L] || price + atr;
+  const bbL = bb.lower[L] || price - atr;
 
-  // 2. Swing high/low Support & Resistance (last 50 candles)
-  const lookback = Math.min(50, L);
-  const recentCandles = candles.slice(L - lookback, L + 1);
-  const swingHighs = [], swingLows = [];
-  for (let i = 2; i < recentCandles.length - 2; i++) {
-    const c = recentCandles[i];
-    if (c.high > recentCandles[i-1].high && c.high > recentCandles[i-2].high &&
-        c.high > recentCandles[i+1].high && c.high > recentCandles[i+2].high) {
-      swingHighs.push(c.high);
-    }
-    if (c.low < recentCandles[i-1].low && c.low < recentCandles[i-2].low &&
-        c.low < recentCandles[i+1].low && c.low < recentCandles[i+2].low) {
-      swingLows.push(c.low);
-    }
-  }
-  // Nearest resistance above price and support below price
-  const resistances = swingHighs.filter(h => h > currentPrice).sort((a,b) => a - b);
-  const supports = swingLows.filter(l => l < currentPrice).sort((a,b) => b - a);
-  const nearestResistance = resistances[0] || currentPrice + atr * 2;
-  const farResistance = resistances[1] || currentPrice + atr * 3;
-  const nearestSupport = supports[0] || currentPrice - atr * 2;
-  const farSupport = supports[1] || currentPrice - atr * 3;
+  // Find swing highs/lows
+  const recent = candles.slice(Math.max(0, L-50));
+  const rH = Math.max(...recent.map(c=>c.high));
+  const rL = Math.min(...recent.map(c=>c.low));
+  const fibR = rH - rL;
 
-  // 3. Fibonacci retracement/extension from recent swing
-  const recentHigh = Math.max(...recentCandles.map(c => c.high));
-  const recentLow = Math.min(...recentCandles.map(c => c.low));
-  const fibRange = recentHigh - recentLow;
-  // Fib extension levels
-  const fib618up = currentPrice + fibRange * 0.618;
-  const fib1up = currentPrice + fibRange * 1.0;
-  const fib618down = currentPrice - fibRange * 0.618;
-  const fib1down = currentPrice - fibRange * 1.0;
-  // Fib retracement targets
-  const fib382ret = recentHigh - fibRange * 0.382;
-  const fib618ret = recentHigh - fibRange * 0.618;
-
-  // 4. Bollinger Band targets
-  const bbUpper = bb.upper[L] || currentPrice + atr;
-  const bbLower = bb.lower[L] || currentPrice - atr;
-  const bbMid = bb.mid[L] || currentPrice;
-
-  // ── AGGREGATE: weighted average of methods ──
-  // Confidence multiplier: stronger signal = extend targets further
-  const strength = adxVal > 25 ? 1.2 : adxVal > 15 ? 1.0 : 0.8;
-
-  let upTarget1, upTarget2, downTarget1, downTarget2;
-
-  // Conservative target (closer): avg of nearest resistance, ATR 1.5x, Fib 0.618, BB upper
-  upTarget1 = ((nearestResistance + atrTargetUp1 + fib618up + bbUpper) / 4) * (0.95 + strength * 0.05);
-  // Aggressive target (further): avg of far resistance, ATR 2.5x, Fib 1.0
-  upTarget2 = ((farResistance + atrTargetUp2 + fib1up) / 3) * (0.95 + strength * 0.05);
-
-  // Conservative support: avg of nearest support, ATR 1.5x down, Fib 0.618 down, BB lower
-  downTarget1 = ((nearestSupport + atrTargetDown1 + fib618down + bbLower) / 4) * (1.05 - strength * 0.05);
-  // Aggressive support: avg of far support, ATR 2.5x down, Fib 1.0 down
-  downTarget2 = ((farSupport + atrTargetDown2 + fib1down) / 3) * (1.05 - strength * 0.05);
-
-  // Ensure logical ordering
-  upTarget1 = Math.max(currentPrice * 1.002, upTarget1);
-  upTarget2 = Math.max(upTarget1 * 1.005, upTarget2);
-  downTarget1 = Math.min(currentPrice * 0.998, downTarget1);
-  downTarget2 = Math.min(downTarget1 * 0.995, downTarget2);
+  const up = ((price + atr*1.5 + price + fibR*0.618 + bbU) / 3) * (0.97 + str*0.03);
+  const down = ((price - atr*1.5 + price - fibR*0.618 + bbL) / 3) * (1.03 - str*0.03);
 
   return {
-    upTarget1: +upTarget1.toFixed(2),
-    upTarget2: +upTarget2.toFixed(2),
-    downTarget1: +downTarget1.toFixed(2),
-    downTarget2: +downTarget2.toFixed(2),
-    upPct1: +((upTarget1 - currentPrice) / currentPrice * 100).toFixed(2),
-    upPct2: +((upTarget2 - currentPrice) / currentPrice * 100).toFixed(2),
-    downPct1: +((downTarget1 - currentPrice) / currentPrice * 100).toFixed(2),
-    downPct2: +((downTarget2 - currentPrice) / currentPrice * 100).toFixed(2),
-    atr: +atr.toFixed(2),
-    nearestResistance: +nearestResistance.toFixed(2),
-    nearestSupport: +nearestSupport.toFixed(2)
+    high: Math.max(price * 1.003, up),
+    low: Math.min(price * 0.997, down),
+    highPct: ((Math.max(price*1.003,up) - price) / price * 100),
+    lowPct: ((Math.min(price*0.997,down) - price) / price * 100)
   };
 }
 
-// ══════════════════════════════════════════════════
-//  SWARM INTELLIGENCE ENGINE (MiroFish-inspired)
-//  8 virtual trader agents, each with unique
-//  strategy, personality, and decision logic.
-//  Consensus = weighted vote across all agents.
-// ══════════════════════════════════════════════════
+// ══════════════════════════════════════
+//  SWARM AGENTS (8 virtual traders)
+// ══════════════════════════════════════
 
-const SWARM_AGENTS = [
-  { id: 'trend', name: 'Trend Rider', emoji: '🏄', strategy: 'ema_cross',
-    desc: 'Follows momentum, rides EMA crossovers', weight: 0.15 },
-  { id: 'momentum', name: 'MACD Hunter', emoji: '🎯', strategy: 'macd',
-    desc: 'Trades MACD histogram momentum shifts', weight: 0.14 },
-  { id: 'value', name: 'Value Scout', emoji: '🔍', strategy: 'rsi_mean',
-    desc: 'Mean reversion: buys oversold, sells overbought', weight: 0.12 },
-  { id: 'whale', name: 'Whale Tracker', emoji: '🐋', strategy: 'mfi_obv',
-    desc: 'Tracks smart money via Money Flow + OBV', weight: 0.16 },
-  { id: 'volatility', name: 'Vol Sniper', emoji: '💥', strategy: 'bb_squeeze',
-    desc: 'Trades Bollinger breakouts and squeezes', weight: 0.10 },
-  { id: 'strength', name: 'Trend Judge', emoji: '⚖️', strategy: 'adx_di',
-    desc: 'Only trades strong trends (ADX > 25)', weight: 0.12 },
-  { id: 'volume', name: 'Volume Oracle', emoji: '📊', strategy: 'vol_vwap',
-    desc: 'Volume spikes + VWAP position analysis', weight: 0.09 },
-  { id: 'composite', name: 'Meta Agent', emoji: '🧠', strategy: 'multi_tf',
-    desc: 'Combines cross-timeframe signals', weight: 0.12 }
+const AGENTS = [
+  { name:'Trend Rider', emoji:'🏄', w:0.15 },
+  { name:'MACD Hunter', emoji:'🎯', w:0.14 },
+  { name:'Value Scout', emoji:'🔍', w:0.12 },
+  { name:'Whale Tracker', emoji:'🐋', w:0.16 },
+  { name:'Vol Sniper', emoji:'💥', w:0.10 },
+  { name:'Trend Judge', emoji:'⚖️', w:0.12 },
+  { name:'Volume Oracle', emoji:'📊', w:0.09 },
+  { name:'Meta Agent', emoji:'🧠', w:0.12 }
 ];
 
-let swarmHistory = []; // Track last 20 consensus values
-let insideAnalyze = false; // Recursion guard for meta agent
+function runAgents(ind) {
+  const {ema9,ema21,ema50,ema9P,ema21P,rsi,mfi,macdH,macdHP,macdL,bbU,bbL,bbM,price,adx,pdi,ndi,obvUp,volR,vwapD} = ind;
+  const results = [];
 
-function runSwarmAgent(agent, indicators) {
-  const { ema9L, ema21L, ema50L, ema9Prev, ema21Prev, rsiVal, mfiVal,
-    macdHist, macdHistPrev, macdLine, bbUp, bbLow, bbMid, price,
-    adxVal, pdi, ndi, obvTrend, volRatio, vwap, vwapDelta } = indicators;
+  // 1. Trend Rider - EMA cross
+  const sp=(ema9-ema21)/ema21*100;
+  results.push({score: Math.max(-1,Math.min(1,sp/1.5*(price>ema50?1.2:0.9)))});
 
-  let score = 0; // -1 (strong sell) to +1 (strong buy)
-  let confidence = 0; // 0-100
-  let reason = '';
+  // 2. MACD Hunter
+  const acc=macdH-macdHP;
+  results.push({score: Math.max(-1,Math.min(1,(macdH/Math.abs(macdL||1))+(acc>0?0.2:-0.2)))});
 
-  switch (agent.strategy) {
-    case 'ema_cross': {
-      const spread = (ema9L - ema21L) / ema21L * 100;
-      const crossed = ema9L > ema21L && ema9Prev <= ema21Prev;
-      const crossedDown = ema9L < ema21L && ema9Prev >= ema21Prev;
-      const above50 = price > ema50L;
-      score = spread > 0 ? Math.min(1, spread / 1.5) : Math.max(-1, spread / 1.5);
-      if (above50 && score > 0) score = Math.min(1, score * 1.3);
-      if (!above50 && score < 0) score = Math.max(-1, score * 1.3);
-      confidence = Math.min(95, Math.abs(spread) * 30 + (crossed || crossedDown ? 25 : 0));
-      reason = crossed ? 'Fresh bullish cross' : crossedDown ? 'Fresh bearish cross' :
-        spread > 0 ? `Bullish spread ${spread.toFixed(2)}%` : `Bearish spread ${spread.toFixed(2)}%`;
-      break;
-    }
-    case 'macd': {
-      const histMomentum = macdHist > 0 ? 1 : -1;
-      const accel = macdHist - macdHistPrev;
-      const crossUp = macdHist > 0 && macdHistPrev <= 0;
-      const crossDown = macdHist < 0 && macdHistPrev >= 0;
-      score = Math.max(-1, Math.min(1, (macdHist / Math.abs(macdLine || 1)) + (accel > 0 ? 0.2 : -0.2)));
-      confidence = Math.min(90, Math.abs(macdHist) * 500 + (crossUp || crossDown ? 30 : 0));
-      reason = crossUp ? 'MACD bullish crossover' : crossDown ? 'MACD bearish crossover' :
-        accel > 0 ? 'Accelerating histogram' : 'Decelerating histogram';
-      break;
-    }
-    case 'rsi_mean': {
-      // Mean reversion: strong buy when oversold, strong sell when overbought
-      if (rsiVal < 25) { score = 0.9; reason = `Deeply oversold (${rsiVal.toFixed(0)})`; }
-      else if (rsiVal < 35) { score = 0.5; reason = `Oversold zone (${rsiVal.toFixed(0)})`; }
-      else if (rsiVal > 75) { score = -0.9; reason = `Deeply overbought (${rsiVal.toFixed(0)})`; }
-      else if (rsiVal > 65) { score = -0.5; reason = `Overbought zone (${rsiVal.toFixed(0)})`; }
-      else { score = (50 - rsiVal) / 50 * 0.3; reason = `Neutral RSI (${rsiVal.toFixed(0)})`; }
-      confidence = Math.min(90, Math.abs(rsiVal - 50) * 2);
-      break;
-    }
-    case 'mfi_obv': {
-      // Smart money tracking
-      const mfiScore = (mfiVal - 50) / 50;
-      const obvScore = obvTrend === 'up' ? 0.5 : -0.5;
-      score = Math.max(-1, Math.min(1, mfiScore * 0.6 + obvScore * 0.4));
-      // Divergence detection
-      const mfiExtreme = mfiVal > 80 || mfiVal < 20;
-      confidence = Math.min(92, Math.abs(mfiVal - 50) * 1.5 + (mfiExtreme ? 20 : 0));
-      reason = mfiVal > 75 ? `Smart money exiting (MFI ${mfiVal.toFixed(0)})` :
-        mfiVal < 25 ? `Smart money loading (MFI ${mfiVal.toFixed(0)})` :
-        obvTrend === 'up' ? 'Accumulation via OBV' : 'Distribution via OBV';
-      break;
-    }
-    case 'bb_squeeze': {
-      if (!bbUp || !bbLow || !bbMid) { score = 0; confidence = 10; reason = 'Insufficient data'; break; }
-      const bbWidth = (bbUp - bbLow) / bbMid;
-      const position = (price - bbLow) / (bbUp - bbLow); // 0 to 1
-      const squeeze = bbWidth < 0.03;
-      if (squeeze) {
-        // In squeeze, slight bias toward trend direction
-        score = ema9L > ema21L ? 0.3 : -0.3;
-        confidence = 60;
-        reason = 'Squeeze — breakout imminent';
-      } else if (position > 0.95) {
-        score = -0.7; confidence = 75;
-        reason = 'At upper Bollinger — pullback likely';
-      } else if (position < 0.05) {
-        score = 0.7; confidence = 75;
-        reason = 'At lower Bollinger — bounce likely';
-      } else {
-        score = -(position - 0.5) * 1.2; // mean reversion
-        confidence = Math.abs(position - 0.5) * 100;
-        reason = position > 0.5 ? 'Upper BB half — caution' : 'Lower BB half — opportunity';
-      }
-      break;
-    }
-    case 'adx_di': {
-      if (adxVal < 20) {
-        score = 0; confidence = 15;
-        reason = `No trend (ADX ${adxVal.toFixed(0)})`;
-      } else {
-        const dir = pdi > ndi ? 1 : -1;
-        score = dir * Math.min(1, adxVal / 35);
-        confidence = Math.min(88, adxVal * 2);
-        reason = pdi > ndi ? `Bullish trend ADX ${adxVal.toFixed(0)}` : `Bearish trend ADX ${adxVal.toFixed(0)}`;
-      }
-      break;
-    }
-    case 'vol_vwap': {
-      const vwapScore = Math.max(-1, Math.min(1, vwapDelta * 20));
-      const volBias = volRatio > 1.5 ? (ema9L > ema21L ? 0.4 : -0.4) : 0;
-      score = Math.max(-1, Math.min(1, vwapScore * 0.6 + volBias * 0.4));
-      confidence = Math.min(80, (Math.abs(vwapDelta) * 1000 + (volRatio > 1.3 ? 20 : 0)));
-      reason = price > vwap ? `Above VWAP (+${(vwapDelta*100).toFixed(2)}%)` :
-        `Below VWAP (${(vwapDelta*100).toFixed(2)}%)`;
-      if (volRatio > 1.5) reason += `, Vol ${volRatio.toFixed(1)}x`;
-      break;
-    }
-    case 'multi_tf': {
-      // Meta agent: uses cached cross-timeframe data (NO recursive analyze calls)
-      const tfScores = [];
-      for (const tf of TIMEFRAMES) {
-        if (cache[tf] && !insideAnalyze) {
-          // Use quick EMA-based scoring instead of full analyze to avoid recursion
-          const c = cache[tf].map(x => x.close);
-          const cL = c.length - 1;
-          if (cL > 26) {
-            const e9 = ema(c, 9), e21 = ema(c, 21);
-            const spread = (e9[cL] - e21[cL]) / e21[cL];
-            tfScores.push({ tf, score: Math.max(-1, Math.min(1, spread * 50)), dir: spread > 0 ? 'BUY' : 'SELL' });
-          }
-        }
-      }
-      if (tfScores.length >= 2) {
-        const avg = tfScores.reduce((s, t) => s + t.score, 0) / tfScores.length;
-        score = Math.max(-1, Math.min(1, avg * 2));
-        const agreeing = tfScores.filter(t => Math.sign(t.score) === Math.sign(avg)).length;
-        confidence = Math.min(95, (agreeing / tfScores.length) * 100);
-        reason = `${agreeing}/${tfScores.length} timeframes agree`;
-      } else {
-        score = 0; confidence = 20; reason = 'Loading timeframes...';
-      }
-      break;
-    }
-  }
+  // 3. Value Scout (RSI mean reversion)
+  results.push({score: rsi<25?0.9:rsi<35?0.5:rsi>75?-0.9:rsi>65?-0.5:(50-rsi)/50*0.3});
 
-  return {
-    ...agent,
-    score: Math.max(-1, Math.min(1, score)),
-    confidence: Math.max(5, Math.min(95, Math.round(confidence))),
-    vote: score > 0.15 ? 'BUY' : score < -0.15 ? 'SELL' : 'HOLD',
-    voteClass: score > 0.15 ? 'buy' : score < -0.15 ? 'sell' : 'hold',
-    reason
-  };
+  // 4. Whale Tracker (MFI + OBV)
+  results.push({score: Math.max(-1,Math.min(1,((mfi-50)/50)*0.6+(obvUp?0.4:-0.4)))});
+
+  // 5. Vol Sniper (Bollinger)
+  if(bbU&&bbL&&bbM){const pos=(price-bbL)/(bbU-bbL);const sq=(bbU-bbL)/bbM<0.03;
+    results.push({score:sq?(ema9>ema21?0.3:-0.3):pos>0.95?-0.7:pos<0.05?0.7:-(pos-0.5)*1.2})}
+  else results.push({score:0});
+
+  // 6. Trend Judge (ADX)
+  results.push({score: adx<20?0:(pdi>ndi?1:-1)*Math.min(1,adx/35)});
+
+  // 7. Volume Oracle (VWAP + volume)
+  const volBias=volR>1.5?(ema9>ema21?0.4:-0.4):0;
+  results.push({score: Math.max(-1,Math.min(1,vwapD*12+volBias))});
+
+  // 8. Meta Agent (cross-TF)
+  let mtfScore=0,mtfCount=0;
+  for(const tf of TIMEFRAMES){if(cache[tf]){
+    const c=cache[tf].map(x=>x.close),cL=c.length-1;
+    if(cL>26){const e9=ema(c,9),e21=ema(c,21);mtfScore+=(e9[cL]-e21[cL])/e21[cL]*50;mtfCount++}}}
+  results.push({score: mtfCount>=2?Math.max(-1,Math.min(1,mtfScore/mtfCount*2)):0});
+
+  return results.map((r,i) => ({
+    ...AGENTS[i],
+    score: Math.max(-1,Math.min(1,r.score)),
+    vote: r.score>0.15?'BUY':r.score<-0.15?'SELL':'HOLD',
+    cls: r.score>0.15?'buy':r.score<-0.15?'sell':'hold'
+  }));
 }
 
-function runSwarm(indicators) {
-  const results = SWARM_AGENTS.map(a => runSwarmAgent(a, indicators));
-
-  // Weighted consensus
-  let totalWeight = 0, weightedScore = 0;
-  for (const r of results) {
-    weightedScore += r.score * r.weight * (r.confidence / 100);
-    totalWeight += r.weight * (r.confidence / 100);
-  }
-  const consensus = totalWeight > 0 ? weightedScore / totalWeight : 0;
-
-  // Agreement percentage
-  const majorityDir = consensus > 0 ? 'BUY' : 'SELL';
-  const agreeing = results.filter(r =>
-    consensus > 0.1 ? r.score > 0.1 : consensus < -0.1 ? r.score < -0.1 : Math.abs(r.score) < 0.15
-  ).length;
-  const agreement = Math.round((agreeing / results.length) * 100);
-
-  // Detect swarm flip (agents disagreeing)
-  const buyAgents = results.filter(r => r.vote === 'BUY').length;
-  const sellAgents = results.filter(r => r.vote === 'SELL').length;
-  const isFlipping = buyAgents >= 3 && sellAgents >= 3;
-
-  // Track history
-  swarmHistory.push(consensus);
-  if (swarmHistory.length > 20) swarmHistory.shift();
-
-  return {
-    agents: results,
-    consensus,
-    agreement,
-    isFlipping,
-    buyCount: buyAgents,
-    sellCount: sellAgents,
-    holdCount: results.filter(r => r.vote === 'HOLD').length,
-    history: [...swarmHistory]
-  };
+// ── FEAR & GREED ──
+function calcFG(rsi,mfi,volR,adx,chg){
+  let fg=50+(rsi-50)*0.3+(mfi-50)*0.25+Math.min(15,Math.max(-15,(volR-1)*15))+(adx>25?8:0)+Math.min(10,Math.max(-10,chg*2));
+  fg=Math.max(0,Math.min(100,Math.round(fg)));
+  const mood=fg<=15?'EXTREME FEAR':fg<=35?'FEAR':fg<=55?'NEUTRAL':fg<=75?'GREED':'EXTREME GREED';
+  const color=fg<=15?'#ff5252':fg<=35?'#ff9800':fg<=55?'#ffeb3b':fg<=75?'#69f0ae':'#00e676';
+  return {value:fg,mood,color};
 }
 
-// ── FEAR & GREED (derived from market data) ──
-function calcFearGreed(rsiVal, mfiVal, volRatio, adxVal, bbWidth, priceChange) {
-  // Multi-factor Fear & Greed score (0 = extreme fear, 100 = extreme greed)
-  let fg = 50;
-
-  // RSI contribution (30%)
-  fg += (rsiVal - 50) * 0.3;
-
-  // MFI contribution (25%)
-  fg += (mfiVal - 50) * 0.25;
-
-  // Volume momentum (15%)
-  fg += Math.min(15, Math.max(-15, (volRatio - 1) * 15));
-
-  // Trend strength (15%)
-  if (adxVal > 25) fg += 8;
-
-  // Price momentum (15%)
-  fg += Math.min(10, Math.max(-10, priceChange * 2));
-
-  fg = Math.max(0, Math.min(100, Math.round(fg)));
-
-  let mood, moodColor;
-  if (fg <= 15) { mood = 'EXTREME FEAR'; moodColor = '#ff5252'; }
-  else if (fg <= 35) { mood = 'FEAR'; moodColor = '#ff9800'; }
-  else if (fg <= 55) { mood = 'NEUTRAL'; moodColor = '#ffeb3b'; }
-  else if (fg <= 75) { mood = 'GREED'; moodColor = '#69f0ae'; }
-  else { mood = 'EXTREME GREED'; moodColor = '#00e676'; }
-
-  return { value: fg, mood, moodColor };
-}
-
-// ══════════════════════════════════════════
-//  COMPOSITE PREDICTION ENGINE
-//  Inspired by FreqAI aggregate scoring +
-//  Polymarket ensemble weighted consensus
-// ══════════════════════════════════════════
+// ══════════════════════════════════════
+//  UNIFIED ANALYZE — ONE FINAL RESULT
+// ══════════════════════════════════════
 
 function analyze(candles) {
   insideAnalyze = true;
-  const closes = candles.map(c => c.close);
-  const volumes = candles.map(c => c.volume);
-  const L = closes.length - 1;
-  const price = closes[L];
+  const closes=candles.map(c=>c.close), volumes=candles.map(c=>c.volume), L=closes.length-1, price=closes[L];
+  const ema9=ema(closes,9),ema21=ema(closes,21),ema50=ema(closes,50);
+  const rsi=calcRSI(closes),rsiVal=rsi[rsi.length-1]||50;
+  const macd=calcMACD(closes);
+  const bb=calcBB(closes);
+  const mfi=calcMFI(candles),mfiVal=mfi[mfi.length-1]||50;
+  const obv=calcOBV(candles),obvSma=sma(obv,20);
+  const adxD=calcADX(candles),adxVal=adxD.adx[L]||20,pdi=adxD.pdi[L]||0,ndi=adxD.ndi[L]||0;
+  const vwap=calcVWAP(candles),volSma=sma(volumes,20);
+  const obvUp=obv[L]>(obvSma[L]||obv[L]);
+  const volR=volSma[L]?volumes[L]/volSma[L]:1;
 
-  // ── Calculate all indicators ──
-  const ema9 = ema(closes, 9), ema21 = ema(closes, 21), ema50 = ema(closes, 50);
-  const rsi = calcRSI(closes);
-  const rsiVal = rsi[rsi.length - 1] || 50;
-  const macd = calcMACD(closes);
-  const bb = calcBB(closes);
-  const mfi = calcMFI(candles);
-  const mfiVal = mfi[mfi.length - 1] || 50;
-  const obv = calcOBV(candles);
-  const obvSma = sma(obv, 20);
-  const adxData = calcADX(candles);
-  const adxVal = adxData.adx[L] || 20;
-  const pdi = adxData.pdi[L] || 0;
-  const ndi = adxData.ndi[L] || 0;
-  const vwap = calcVWAP(candles);
-  const volSma = sma(volumes, 20);
-
-  // ── Normalize each indicator to [-1, +1] (FreqAI Z-score style) ──
+  // ── 9 Technical indicator scores [-1,+1] ──
   const factors = [];
+  const emaSp=(ema9[L]-ema21[L])/ema21[L]*100;
+  factors.push({n:'EMA Trend',s:Math.max(-1,Math.min(1,emaSp/2)),w:0.15});
+  const hN=macd.histogram[L],hP=macd.histogram[L-1];
+  factors.push({n:'MACD',s:Math.max(-1,Math.min(1,(hN/Math.abs(macd.macdLine[L]||1))+(hN-hP>0?0.15:-0.15))),w:0.15});
+  factors.push({n:'RSI',s:Math.max(-1,Math.min(1,((rsiVal-50)/50)*1.5)),w:0.12});
+  factors.push({n:'Money Flow',s:Math.max(-1,Math.min(1,((mfiVal-50)/50)*1.5)),w:0.15});
+  const obvD=obvSma[L]?((obv[L]-obvSma[L])/Math.abs(obvSma[L])):0;
+  factors.push({n:'OBV',s:Math.max(-1,Math.min(1,obvD*5)),w:0.10});
+  const td=ema9[L]>ema21[L]?1:-1;
+  factors.push({n:'Volume',s:volR>1.5?0.8*td:volR>1.2?0.4*td:0,w:0.08});
+  let bbN=0;if(bb.mid[L]&&bb.upper[L]&&bb.lower[L]){const bw=bb.upper[L]-bb.lower[L];
+    bbN=bw===0?0:-((price-bb.mid[L])/(bw/2))*0.8;bbN=Math.max(-1,Math.min(1,bbN))}
+  factors.push({n:'Bollinger',s:bbN,w:0.10});
+  const adxS=adxVal>25?(pdi>ndi?1:-1)*Math.min(adxVal/30,1.5)*0.7:0;
+  factors.push({n:'ADX',s:Math.max(-1,Math.min(1,adxS)),w:0.10});
+  factors.push({n:'VWAP',s:Math.max(-1,Math.min(1,((price-vwap)/vwap)*20)),w:0.05});
 
-  // 1. EMA TREND (weight: 15%)
-  const emaSpread = (ema9[L] - ema21[L]) / ema21[L] * 100;
-  const emaNorm = Math.max(-1, Math.min(1, emaSpread / 2));
-  factors.push({ name: 'EMA Trend (9/21)', weight: 0.15, score: emaNorm,
-    value: `${emaSpread >= 0 ? '+' : ''}${emaSpread.toFixed(2)}%`,
-    signal: emaNorm > 0.1 ? 'buy' : emaNorm < -0.1 ? 'sell' : 'neutral' });
+  // ── Technical composite score ──
+  let techScore=0;for(const f of factors)techScore+=f.s*f.w;
 
-  // 2. MACD MOMENTUM (weight: 15%)
-  const histNow = macd.histogram[L], histPrev = macd.histogram[L-1];
-  const macdMomentum = histNow > 0 ? Math.min(1, histNow / Math.abs(macd.macdLine[L] || 1)) :
-    Math.max(-1, histNow / Math.abs(macd.macdLine[L] || 1));
-  const macdAccel = histNow - histPrev > 0 ? 0.15 : -0.15;
-  const macdNorm = Math.max(-1, Math.min(1, macdMomentum + macdAccel));
-  factors.push({ name: 'MACD Momentum', weight: 0.15, score: macdNorm,
-    value: `H: ${histNow.toFixed(4)}`,
-    signal: macdNorm > 0.1 ? 'buy' : macdNorm < -0.1 ? 'sell' : 'neutral' });
-
-  // 3. RSI (weight: 12%)
-  const rsiNorm = ((rsiVal - 50) / 50); // >50 = bullish
-  const rsiClamped = Math.max(-1, Math.min(1, rsiNorm * 1.5));
-  factors.push({ name: 'RSI (14)', weight: 0.12, score: rsiClamped,
-    value: rsiVal.toFixed(1),
-    signal: rsiVal < 35 ? 'buy' : rsiVal > 68 ? 'sell' : 'neutral' });
-
-  // 4. MONEY FLOW INDEX (weight: 15%) ★ KEY ADDITION
-  const mfiNorm = ((mfiVal - 50) / 50);
-  const mfiClamped = Math.max(-1, Math.min(1, mfiNorm * 1.5));
-  factors.push({ name: 'Money Flow (MFI)', weight: 0.15, score: mfiClamped,
-    value: mfiVal.toFixed(1),
-    signal: mfiVal < 25 ? 'buy' : mfiVal > 75 ? 'sell' : 'neutral' });
-
-  // 5. OBV TREND (weight: 10%)
-  const obvNow = obv[L], obvSmaVal = obvSma[L] || obvNow;
-  const obvDelta = obvSmaVal === 0 ? 0 : (obvNow - obvSmaVal) / Math.abs(obvSmaVal);
-  const obvNorm = Math.max(-1, Math.min(1, obvDelta * 5));
-  factors.push({ name: 'OBV Trend', weight: 0.10, score: obvNorm,
-    value: obvNow > obvSmaVal ? 'Accumulating' : 'Distributing',
-    signal: obvNorm > 0.2 ? 'buy' : obvNorm < -0.2 ? 'sell' : 'neutral' });
-
-  // 6. VOLUME SPIKE (weight: 8%)
-  const volRatio = volSma[L] ? volumes[L] / volSma[L] : 1;
-  const trendDir = ema9[L] > ema21[L] ? 1 : -1;
-  const volScore = volRatio > 1.5 ? 0.8 * trendDir : volRatio > 1.2 ? 0.4 * trendDir : 0;
-  factors.push({ name: 'Volume Pressure', weight: 0.08, score: volScore,
-    value: `${volRatio.toFixed(1)}x avg`,
-    signal: volScore > 0.2 ? 'buy' : volScore < -0.2 ? 'sell' : 'neutral' });
-
-  // 7. BOLLINGER POSITION (weight: 10%)
-  const bbMid = bb.mid[L], bbUp = bb.upper[L], bbLow = bb.lower[L];
-  let bbNorm = 0;
-  if (bbMid && bbUp && bbLow) {
-    const bbWidth = bbUp - bbLow;
-    bbNorm = bbWidth === 0 ? 0 : ((price - bbMid) / (bbWidth / 2));
-    bbNorm = Math.max(-1, Math.min(1, -bbNorm * 0.8)); // mean reversion: near top = bearish
-  }
-  factors.push({ name: 'Bollinger Band', weight: 0.10, score: bbNorm,
-    value: bbLow ? `$${bbLow.toFixed(2)} - $${bbUp.toFixed(2)}` : '--',
-    signal: price <= bbLow * 1.01 ? 'buy' : price >= bbUp * 0.99 ? 'sell' : 'neutral' });
-
-  // 8. ADX TREND STRENGTH (weight: 10%)
-  const adxTrending = adxVal > 25;
-  const adxDirection = pdi > ndi ? 1 : -1;
-  const adxMultiplier = Math.min(adxVal / 30, 1.5);
-  const adxScore = adxTrending ? adxDirection * adxMultiplier * 0.7 : 0;
-  factors.push({ name: 'ADX Strength', weight: 0.10, score: Math.max(-1, Math.min(1, adxScore)),
-    value: `${adxVal.toFixed(0)} ${adxTrending ? '(Trending)' : '(Ranging)'}`,
-    signal: adxTrending && pdi > ndi ? 'buy' : adxTrending && ndi > pdi ? 'sell' : 'neutral' });
-
-  // 9. VWAP POSITION (weight: 5%)
-  const vwapDelta = (price - vwap) / vwap;
-  const vwapNorm = Math.max(-1, Math.min(1, vwapDelta * 20));
-  factors.push({ name: 'VWAP Position', weight: 0.05, score: vwapNorm,
-    value: `$${vwap.toFixed(2)}`,
-    signal: price > vwap * 1.005 ? 'buy' : price < vwap * 0.995 ? 'sell' : 'neutral' });
-
-  // ══ COMPOSITE SCORE (Polymarket-style weighted aggregate) ══
-  let rawScore = 0;
-  for (const f of factors) rawScore += f.score * f.weight;
-  // rawScore is in roughly [-1, +1]
-
-  // Convert to 0-100% bullish scale
-  let bullishPct = ((rawScore + 1) / 2) * 100;
-  bullishPct = Math.max(2, Math.min(98, bullishPct));
-
-  // Determine direction and DISPLAY confidence in that direction
-  // So "66% SELL" means 66% confident it will go down (not 34% buy)
-  let direction, dirClass, displayPct;
-  if (bullishPct >= 58) {
-    direction = 'BUY'; dirClass = 'buy';
-    displayPct = bullishPct; // e.g., 78% BUY
-  } else if (bullishPct <= 42) {
-    direction = 'SELL'; dirClass = 'sell';
-    displayPct = 100 - bullishPct; // flip: 34% bullish → 66% SELL confidence
-  } else {
-    direction = 'HOLD'; dirClass = 'neutral';
-    displayPct = 50 + Math.abs(bullishPct - 50); // show how close to 50 (low conviction)
-  }
-
-  // ── TREND CHANGE WARNING DETECTION ──
-  let warning = null;
-  const emaCrossUp = ema9[L] > ema21[L] && ema9[L-1] <= ema21[L-1];
-  const emaCrossDown = ema9[L] < ema21[L] && ema9[L-1] >= ema21[L-1];
-  const macdCrossUp = histNow > 0 && histPrev <= 0;
-  const macdCrossDown = histNow < 0 && histPrev >= 0;
-  const mfiExtremeHigh = mfiVal > 82;
-  const mfiExtremeLow = mfiVal < 18;
-  const rsiExtremeHigh = rsiVal > 75;
-  const rsiExtremeLow = rsiVal < 25;
-  const bbSqueeze = bbUp && bbLow && ((bbUp - bbLow) / bbMid < 0.03);
-  // MFI divergence: price making new high but MFI declining (bearish) or vice versa
-  const recentHighs = closes.slice(-5);
-  const recentMFI = mfi.slice(-5).filter(v => v !== null);
-  const priceTrendUp = recentHighs[recentHighs.length-1] > recentHighs[0];
-  const mfiTrendDown = recentMFI.length >= 2 && recentMFI[recentMFI.length-1] < recentMFI[0];
-  const mfiTrendUp = recentMFI.length >= 2 && recentMFI[recentMFI.length-1] > recentMFI[0];
-  const priceTrendDown = recentHighs[recentHighs.length-1] < recentHighs[0];
-  const bearishDivergence = priceTrendUp && mfiTrendDown;
-  const bullishDivergence = priceTrendDown && mfiTrendUp;
-
-  if (bearishDivergence && (rsiExtremeHigh || mfiExtremeHigh)) {
-    warning = { type: 'reversal-down', icon: '🔻',
-      text: 'BEARISH DIVERGENCE — Smart money exiting',
-      sub: `MFI falling while price rising. RSI: ${rsiVal.toFixed(0)}, MFI: ${mfiVal.toFixed(0)}` };
-  } else if (bullishDivergence && (rsiExtremeLow || mfiExtremeLow)) {
-    warning = { type: 'reversal-up', icon: '🔺',
-      text: 'BULLISH DIVERGENCE — Smart money accumulating',
-      sub: `MFI rising while price falling. RSI: ${rsiVal.toFixed(0)}, MFI: ${mfiVal.toFixed(0)}` };
-  } else if (emaCrossUp || macdCrossUp) {
-    warning = { type: 'reversal-up', icon: '🔺',
-      text: `TREND SHIFT UP${emaCrossUp ? ' — EMA Cross' : ''}${macdCrossUp ? ' — MACD Cross' : ''}`,
-      sub: 'Momentum flipping bullish. Watch for confirmation.' };
-  } else if (emaCrossDown || macdCrossDown) {
-    warning = { type: 'reversal-down', icon: '🔻',
-      text: `TREND SHIFT DOWN${emaCrossDown ? ' — EMA Cross' : ''}${macdCrossDown ? ' — MACD Cross' : ''}`,
-      sub: 'Momentum flipping bearish. Consider reducing exposure.' };
-  } else if (mfiExtremeHigh) {
-    warning = { type: 'reversal-down', icon: '⚠️',
-      text: 'OVERBOUGHT — Money Flow extreme high',
-      sub: `MFI at ${mfiVal.toFixed(0)} — usually precedes pullback` };
-  } else if (mfiExtremeLow) {
-    warning = { type: 'reversal-up', icon: '⚠️',
-      text: 'OVERSOLD — Money Flow extreme low',
-      sub: `MFI at ${mfiVal.toFixed(0)} — potential bounce incoming` };
-  } else if (bbSqueeze) {
-    warning = { type: '', icon: '💥',
-      text: 'VOLATILITY SQUEEZE — Breakout imminent',
-      sub: 'Bollinger Bands contracting. Big move expected soon.' };
-  }
-
-  // ══ PRICE TARGET CALCULATION ══
-  // Uses 4 methods averaged: ATR projection, Fibonacci, Support/Resistance, Bollinger Bands
-  const targets = calcPriceTargets(candles, price, direction, adxVal, bb, ema50);
-
-  const c = candles[L];
-  const prevClose = candles[Math.max(0, L-1)].close;
-  const change = ((c.close - prevClose) / prevClose * 100);
-
-  // ── Run Swarm Intelligence ──
-  const swarmIndicators = {
-    ema9L: ema9[L], ema21L: ema21[L], ema50L: ema50[L],
-    ema9Prev: ema9[L-1], ema21Prev: ema21[L-1],
-    rsiVal, mfiVal,
-    macdHist: macd.histogram[L], macdHistPrev: macd.histogram[L-1],
-    macdLine: macd.macdLine[L],
-    bbUp: bb.upper[L], bbLow: bb.lower[L], bbMid: bb.mid[L],
-    price, adxVal, pdi, ndi,
-    obvTrend: obvNow > obvSmaVal ? 'up' : 'down',
-    volRatio: volSma[L] ? volumes[L] / volSma[L] : 1,
-    vwap, vwapDelta: (price - vwap) / vwap
-  };
+  // ── Swarm agent scores ──
   insideAnalyze = false;
-  const swarm = runSwarm(swarmIndicators);
+  const ind={ema9:ema9[L],ema21:ema21[L],ema50:ema50[L],ema9P:ema9[L-1],ema21P:ema21[L-1],
+    rsi:rsiVal,mfi:mfiVal,macdH:hN,macdHP:hP,macdL:macd.macdLine[L],
+    bbU:bb.upper[L],bbL:bb.lower[L],bbM:bb.mid[L],price,adx:adxVal,pdi,ndi,
+    obvUp,volR,vwapD:(price-vwap)/vwap};
+  const agents=runAgents(ind);
+  let swarmW=0,swarmS=0;
+  for(const a of agents){swarmS+=a.score*a.w;swarmW+=a.w}
+  const swarmScore=swarmW>0?swarmS/swarmW:0;
 
-  // ── Fear & Greed Index ──
-  const bbWidth = (bb.upper[L] && bb.lower[L] && bb.mid[L]) ?
-    (bb.upper[L] - bb.lower[L]) / bb.mid[L] : 0.02;
-  const fearGreed = calcFearGreed(rsiVal, mfiVal,
-    volSma[L] ? volumes[L] / volSma[L] : 1, adxVal, bbWidth, change);
+  // ── Fear & Greed ──
+  const prevClose=candles[Math.max(0,L-1)].close;
+  const change=((price-prevClose)/prevClose*100);
+  const fg=calcFG(rsiVal,mfiVal,volR,adxVal,change);
 
-  return {
-    price, direction, dirClass, displayPct, rawScore,
-    factors, warning, targets, swarm, fearGreed,
-    mfiVal, rsiVal, adxVal, obvTrend: obvNow > obvSmaVal ? 'up' : 'down',
-    buyFactors: factors.filter(f => f.score > 0.1).length,
-    sellFactors: factors.filter(f => f.score < -0.1).length,
-    ohlc: { open: c.open, high: c.high, low: c.low, close: c.close },
-    change
-  };
+  // ══════════════════════════════════════════
+  //  FINAL UNIFIED SCORE
+  //  60% technical + 30% swarm + 10% sentiment
+  // ══════════════════════════════════════════
+  const sentimentBias = (fg.value - 50) / 100; // -0.5 to +0.5
+  const finalScore = techScore * 0.60 + swarmScore * 0.30 + sentimentBias * 0.10;
+
+  // Convert to confidence
+  let bullish = ((finalScore + 1) / 2) * 100;
+  bullish = Math.max(2, Math.min(98, bullish));
+
+  let dir, cls, conf;
+  if (bullish >= 58) { dir='BUY'; cls='buy'; conf=Math.round(bullish); }
+  else if (bullish <= 42) { dir='SELL'; cls='sell'; conf=Math.round(100-bullish); }
+  else { dir='HOLD'; cls='hold'; conf=Math.round(50+Math.abs(bullish-50)); }
+
+  // ── Warning detection ──
+  let warning = null;
+  const emaCU=ema9[L]>ema21[L]&&ema9[L-1]<=ema21[L-1];
+  const emaCDown=ema9[L]<ema21[L]&&ema9[L-1]>=ema21[L-1];
+  const macdCU=hN>0&&hP<=0, macdCD=hN<0&&hP>=0;
+  const bbSq=bb.upper[L]&&bb.lower[L]&&((bb.upper[L]-bb.lower[L])/bb.mid[L]<0.03);
+  if(emaCU||macdCU) warning={type:'reversal-up',icon:'🔺',text:`TREND SHIFT UP${emaCU?' — EMA Cross':''}${macdCU?' — MACD Cross':''}`};
+  else if(emaCDown||macdCD) warning={type:'reversal-down',icon:'🔻',text:`TREND SHIFT DOWN${emaCDown?' — EMA Cross':''}${macdCD?' — MACD Cross':''}`};
+  else if(mfiVal>82) warning={type:'reversal-down',icon:'⚠️',text:`OVERBOUGHT — MFI at ${mfiVal.toFixed(0)}`};
+  else if(mfiVal<18) warning={type:'reversal-up',icon:'⚠️',text:`OVERSOLD — MFI at ${mfiVal.toFixed(0)}`};
+  else if(bbSq) warning={type:'',icon:'💥',text:'VOLATILITY SQUEEZE — Breakout imminent'};
+
+  // ── Price targets ──
+  const targets = calcTargets(candles, price, adxVal, bb);
+
+  // ── Build reason string ──
+  const buyAgents=agents.filter(a=>a.vote==='BUY').length;
+  const sellAgents=agents.filter(a=>a.vote==='SELL').length;
+  const topFactor=factors.reduce((a,b)=>Math.abs(b.s)>Math.abs(a.s)?b:a);
+  const reason=`${buyAgents} agents buy, ${sellAgents} sell · Strongest: ${topFactor.n} · F&G: ${fg.mood}`;
+
+  return { price, dir, cls, conf, factors, agents, fg, warning, targets, change, reason,
+    ohlc:{o:candles[L].open,h:candles[L].high,l:candles[L].low,c:candles[L].close} };
 }
 
 // ══════════════
-//  RENDER UI
+//  RENDER
 // ══════════════
 
 function render(result) {
-  const { factors, ohlc, direction, dirClass, displayPct, warning, targets, swarm, fearGreed,
-    mfiVal, rsiVal, adxVal, buyFactors, sellFactors, rawScore } = result;
-
   // Price
-  const priceEl = document.getElementById('price');
-  const changeEl = document.getElementById('change');
-  const chg = result.change;
-  priceEl.textContent = `$${result.price.toFixed(2)}`;
-  priceEl.style.color = dirClass === 'buy' ? '#00e676' : dirClass === 'sell' ? '#ff5252' : '#ccc';
-  changeEl.textContent = `${chg >= 0 ? '+' : ''}${chg.toFixed(2)}%`;
-  changeEl.className = `price-change ${chg >= 0 ? 'up' : 'down'}`;
+  document.getElementById('price').textContent = `$${result.price.toFixed(2)}`;
+  document.getElementById('price').style.color = result.cls==='buy'?'#00e676':result.cls==='sell'?'#ff5252':'#ccc';
+  const chgEl=document.getElementById('change');
+  chgEl.textContent=`${result.change>=0?'+':''}${result.change.toFixed(2)}%`;
+  chgEl.className=`price-change ${result.change>=0?'up':'down'}`;
 
-  // Big prediction circle
-  const ringColor = dirClass === 'buy' ? '#00e676' : dirClass === 'sell' ? '#ff5252' : '#555';
-  const circEl = document.getElementById('predCircle');
-  circEl.style.setProperty('--ring-color', ringColor);
-  circEl.style.setProperty('--ring-pct', Math.round(displayPct));
-  document.getElementById('predPct').textContent = `${Math.round(displayPct)}%`;
-  document.getElementById('predPct').style.color = ringColor;
-  document.getElementById('predDir').textContent = direction;
-  document.getElementById('predDir').style.color = ringColor;
+  // Verdict
+  const vBox=document.getElementById('verdict');
+  vBox.className=`verdict-box ${result.cls}`;
+  const vDir=document.getElementById('verdictDir');
+  vDir.textContent=result.dir;
+  vDir.className=`verdict-dir ${result.cls}`;
+  document.getElementById('verdictConf').textContent=`${result.conf}% confidence`;
+  document.getElementById('verdictReason').textContent=result.reason;
 
-  // Warning bar
-  const warnBar = document.getElementById('warningBar');
-  if (warning) {
-    warnBar.className = `warning-bar active ${warning.type}`;
-    document.getElementById('warnIcon').textContent = warning.icon;
-    document.getElementById('warnText').textContent = warning.text;
-    document.getElementById('warnSub').textContent = warning.sub;
-  } else {
-    warnBar.className = 'warning-bar';
-  }
+  // Warning
+  const wBar=document.getElementById('warningBar');
+  if(result.warning){wBar.className=`warning-bar active ${result.warning.type}`;
+    document.getElementById('warnIcon').textContent=result.warning.icon;
+    document.getElementById('warnText').textContent=result.warning.text;
+  } else wBar.className='warning-bar';
 
-  // Content
-  const content = document.getElementById('content');
-  const buyPct = Math.round((buyFactors / factors.length) * 100);
-  const sellPct = Math.round((sellFactors / factors.length) * 100);
+  // Price targets
+  document.getElementById('tpHigh').textContent=`$${result.targets.high.toFixed(2)}`;
+  document.getElementById('tpHighPct').textContent=`+${result.targets.highPct.toFixed(1)}%`;
+  document.getElementById('tpLow').textContent=`$${result.targets.low.toFixed(2)}`;
+  document.getElementById('tpLowPct').textContent=`${result.targets.lowPct.toFixed(1)}%`;
 
-  content.innerHTML = `
-    <!-- MONEY FLOW SECTION -->
-    <div class="flow-section">
-      <div class="flow-header">
-        <span class="flow-title">Money Flow Integrator</span>
-        <span class="flow-value" style="color:${mfiVal > 50 ? '#00e676' : '#ff5252'}">${mfiVal.toFixed(1)}</span>
-      </div>
-      <div class="flow-bar">
-        <div class="flow-fill" style="width:${mfiVal}%;background:${
-          mfiVal > 75 ? '#ff5252' : mfiVal > 50 ? '#00e676' : mfiVal > 25 ? '#ff9800' : '#ff5252'
-        }"></div>
-      </div>
-      <div class="flow-labels"><span>Oversold (0)</span><span>Neutral (50)</span><span>Overbought (100)</span></div>
-      <div class="flow-meter">
-        <div class="flow-pill">
-          <div class="fp-label">MFI</div>
-          <div class="fp-val" style="color:${mfiVal < 30 ? '#00e676' : mfiVal > 70 ? '#ff5252' : '#aaa'}">${mfiVal.toFixed(0)}</div>
-        </div>
-        <div class="flow-pill">
-          <div class="fp-label">RSI</div>
-          <div class="fp-val" style="color:${rsiVal < 35 ? '#00e676' : rsiVal > 68 ? '#ff5252' : '#aaa'}">${rsiVal.toFixed(0)}</div>
-        </div>
-        <div class="flow-pill">
-          <div class="fp-label">ADX</div>
-          <div class="fp-val" style="color:${adxVal > 25 ? '#4fc3f7' : '#555'}">${adxVal.toFixed(0)}</div>
-        </div>
-      </div>
-    </div>
+  // Agents detail
+  document.getElementById('agentList').innerHTML=result.agents.map(a=>
+    `<div class="agent-row"><div class="agent-left"><span class="agent-emoji">${a.emoji}</span><span class="agent-name">${a.name}</span></div><span class="agent-signal ${a.cls}">${a.vote}</span></div>`).join('');
 
-    <!-- SWARM INTELLIGENCE -->
-    <div class="swarm-card">
-      <div class="swarm-header">
-        <span class="swarm-title">Swarm Intelligence</span>
-        <span class="swarm-badge">MiroFish</span>
-      </div>
+  // Indicators detail
+  document.getElementById('indicatorList').innerHTML=result.factors.map(f=>{
+    const sig=f.s>0.1?'buy':f.s<-0.1?'sell':'hold';
+    return `<div class="agent-row"><div class="agent-left"><span class="agent-name">${f.n}</span></div><span class="agent-signal ${sig}">${sig.toUpperCase()}</span></div>`}).join('');
 
-      <div class="swarm-flip-alert ${swarm.isFlipping ? 'active' : ''}" id="swarmFlip">
-        ⚡ SWARM DIVIDED — ${swarm.buyCount} agents BUY vs ${swarm.sellCount} SELL — Trend reversal possible
-      </div>
+  // Fear & Greed
+  document.getElementById('fgMood').textContent=result.fg.mood;
+  document.getElementById('fgMood').style.color=result.fg.color;
+  document.getElementById('fgNeedle').style.left=`${result.fg.value}%`;
+  document.getElementById('fgVal').textContent=result.fg.value;
+  document.getElementById('fgVal').style.color=result.fg.color;
 
-      <div class="swarm-consensus">
-        <div class="swarm-ring" style="--swarm-color:${swarm.consensus > 0.1 ? '#00e676' : swarm.consensus < -0.1 ? '#ff5252' : '#888'};--swarm-agree:${swarm.agreement}">
-          <div class="swarm-ring-inner">
-            <div class="swarm-ring-pct" style="color:${swarm.consensus > 0.1 ? '#00e676' : swarm.consensus < -0.1 ? '#ff5252' : '#888'}">${swarm.agreement}%</div>
-            <div class="swarm-ring-label">agree</div>
-          </div>
-        </div>
-        <div class="swarm-consensus-text">
-          <div class="swarm-verdict" style="color:${swarm.consensus > 0.1 ? '#00e676' : swarm.consensus < -0.1 ? '#ff5252' : '#888'}">
-            ${swarm.consensus > 0.1 ? '🟢 SWARM SAYS BUY' : swarm.consensus < -0.1 ? '🔴 SWARM SAYS SELL' : '⚪ SWARM NEUTRAL'}
-          </div>
-          <div class="swarm-sub">
-            ${swarm.buyCount} buy · ${swarm.holdCount} hold · ${swarm.sellCount} sell — Consensus: ${(swarm.consensus * 100).toFixed(0)}%
-          </div>
-        </div>
-      </div>
-
-      <div class="swarm-agents">
-        ${swarm.agents.map(a => `
-          <div class="swarm-agent ${a.voteClass}-vote">
-            <div class="agent-avatar">${a.emoji}</div>
-            <div class="agent-info">
-              <div class="agent-name">${a.name}</div>
-              <div class="agent-vote ${a.voteClass}">${a.vote} <span class="agent-conf">${a.confidence}%</span></div>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-
-      <div class="swarm-history" title="Recent consensus history">
-        ${swarm.history.map(h => {
-          const hPct = Math.abs(h) * 100;
-          const hColor = h > 0.1 ? '#00e676' : h < -0.1 ? '#ff5252' : '#333';
-          return `<div class="swarm-history-bar" style="height:${Math.max(12, hPct)}%;background:${hColor}"></div>`;
-        }).join('')}
-      </div>
-    </div>
-
-    <!-- FEAR & GREED INDEX -->
-    <div class="fg-section">
-      <div class="flow-header">
-        <span class="flow-title">Market Fear & Greed</span>
-        <span class="flow-value" style="color:${fearGreed.moodColor}">${fearGreed.value}</span>
-      </div>
-      <div class="fg-bar-wrap">
-        <div class="fg-bar"><div class="fg-needle" style="left:${fearGreed.value}%"></div></div>
-      </div>
-      <div class="fg-label-row"><span>Extreme Fear</span><span>Fear</span><span>Neutral</span><span>Greed</span><span>Extreme Greed</span></div>
-      <div class="fg-mood" style="color:${fearGreed.moodColor}">${fearGreed.mood}</div>
-    </div>
-
-    <!-- PRICE TARGETS -->
-    <div class="targets-card">
-      <div class="targets-header">
-        <span class="targets-title">Price Targets (USDT)</span>
-        <span class="targets-dir ${dirClass}">${direction === 'BUY' ? 'UPSIDE TARGETS' : direction === 'SELL' ? 'DOWNSIDE RISK' : 'RANGE BOUND'}</span>
-      </div>
-      <div class="target-visual">
-        <div class="target-track">
-          <div class="target-line high">
-            <span class="target-label">${direction === 'SELL' ? 'Resistance' : 'Target 2'}</span>
-            <div class="target-bar"></div>
-            <span class="target-price">$${targets.upTarget2.toFixed(2)}</span>
-            <span class="target-pct">+${targets.upPct2.toFixed(1)}%</span>
-          </div>
-          <div class="target-line mid">
-            <span class="target-label">${direction === 'SELL' ? 'Resistance 1' : 'Target 1'}</span>
-            <div class="target-bar"></div>
-            <span class="target-price">$${targets.upTarget1.toFixed(2)}</span>
-            <span class="target-pct">+${targets.upPct1.toFixed(1)}%</span>
-          </div>
-          <div class="target-line current">
-            <span class="target-label">Current</span>
-            <div class="target-bar"></div>
-            <span class="target-price">$${result.price.toFixed(2)}</span>
-            <span class="target-pct">NOW</span>
-          </div>
-          <div class="target-line midlow">
-            <span class="target-label">${direction === 'BUY' ? 'Support 1' : 'Target 1'}</span>
-            <div class="target-bar"></div>
-            <span class="target-price">$${targets.downTarget1.toFixed(2)}</span>
-            <span class="target-pct">${targets.downPct1.toFixed(1)}%</span>
-          </div>
-          <div class="target-line low">
-            <span class="target-label">${direction === 'BUY' ? 'Support' : 'Target 2'}</span>
-            <div class="target-bar"></div>
-            <span class="target-price">$${targets.downTarget2.toFixed(2)}</span>
-            <span class="target-pct">${targets.downPct2.toFixed(1)}%</span>
-          </div>
-        </div>
-      </div>
-      <div class="potential-row">
-        <div class="potential-pill gain">
-          <div class="pp-label">Potential High</div>
-          <div class="pp-price">$${(direction === 'BUY' ? targets.upTarget2 : targets.upTarget1).toFixed(2)}</div>
-          <div class="pp-pct">+${(direction === 'BUY' ? targets.upPct2 : targets.upPct1).toFixed(1)}%</div>
-        </div>
-        <div class="potential-pill loss">
-          <div class="pp-label">Potential Low</div>
-          <div class="pp-price">$${(direction === 'SELL' ? targets.downTarget2 : targets.downTarget1).toFixed(2)}</div>
-          <div class="pp-pct">${(direction === 'SELL' ? targets.downPct2 : targets.downPct1).toFixed(1)}%</div>
-        </div>
-      </div>
-      <div class="target-method">Based on ATR(14) · Fibonacci · Support/Resistance · Bollinger Bands</div>
-    </div>
-
-    <div class="cards">
-      <!-- SCORE BREAKDOWN -->
-      <div class="card">
-        <div class="card-title">Signal Consensus</div>
-        <div class="score-breakdown">
-          <span class="score-label" style="color:#00e676">${buyFactors}</span>
-          <div class="score-bar-track">
-            <div class="score-bar-buy" style="width:${buyPct/2}%"></div>
-            <div class="score-bar-sell" style="width:${sellPct/2}%"></div>
-          </div>
-          <span class="score-label" style="color:#ff5252">${sellFactors}</span>
-        </div>
-        <div style="text-align:center;margin-top:8px;font-size:11px;opacity:.35">
-          ${buyFactors} bullish / ${factors.length - buyFactors - sellFactors} neutral / ${sellFactors} bearish
-        </div>
-      </div>
-
-      <!-- OHLC -->
-      <div class="card">
-        <div class="card-title">OHLC</div>
-        <div class="ohlc">
-          <div>Open<span>$${ohlc.open.toFixed(2)}</span></div>
-          <div>High<span style="color:#00e676">$${ohlc.high.toFixed(2)}</span></div>
-          <div>Low<span style="color:#ff5252">$${ohlc.low.toFixed(2)}</span></div>
-          <div>Close<span>$${ohlc.close.toFixed(2)}</span></div>
-        </div>
-      </div>
-
-      <!-- ALL FACTORS -->
-      <div class="card">
-        <div class="card-title">Prediction Factors</div>
-        ${factors.map(f => {
-          const pct = ((f.score + 1) / 2 * 100).toFixed(0);
-          return `
-          <div class="indicator-row">
-            <span class="ind-name">${f.name}</span>
-            <span class="ind-value">${f.value}</span>
-            <span class="ind-signal ${f.signal}">${f.signal.toUpperCase()}</span>
-            <span class="ind-weight">${(f.weight*100).toFixed(0)}%</span>
-          </div>`;
-        }).join('')}
-      </div>
-    </div>
-
-    <div class="updated-footer" id="updated">Updated: ${new Date().toLocaleTimeString()}</div>
-  `;
+  document.getElementById('updated').textContent=`Updated: ${new Date().toLocaleTimeString()}`;
 }
 
-// ── MULTI-TIMEFRAME OVERVIEW (fetches all TFs) ──
-async function fetchAllTFOverview() {
-  const grid = document.createElement('div');
-  grid.className = 'overview-grid';
-  grid.id = 'overviewGrid';
+// ══════════════════════════════
+//  TIMEFRAME BUTTONS + COUNTDOWN
+// ══════════════════════════════
 
+function buildTFGrid() {
+  const grid = document.getElementById('tfGrid');
+  grid.innerHTML = '';
   for (const tf of TIMEFRAMES) {
-    const cell = document.createElement('div');
-    cell.className = `ov-cell neutral${tf === activeTF ? ' active-tf' : ''}`;
-    cell.dataset.tf = tf;
-    cell.innerHTML = `<div class="ov-tf">${tf}</div><div class="ov-pct" style="color:#444">...</div><div class="ov-dir">--</div>`;
-    grid.appendChild(cell);
+    const btn = document.createElement('div');
+    btn.className = `tf-btn${tf===activeTF?' active':''}`;
+    btn.dataset.tf = tf;
+    btn.innerHTML = `<div class="tf-label">${TF_DISPLAY[tf]}</div><div class="tf-dir hold" id="dir-${tf}">...</div><div class="tf-conf" id="conf-${tf}">--</div><div class="tf-countdown" id="cd-${tf}">--:--</div>`;
+    btn.addEventListener('click', () => switchTF(tf));
+    grid.appendChild(btn);
 
-    // Tap to switch timeframe
-    cell.addEventListener('click', () => switchTimeframe(tf));
-
-    // Fetch in background
+    // Fetch data for each button
     fetchCandles(tf, 200).then(candles => {
-      const r = analyze(candles);
       cache[tf] = candles;
-      cell.className = `ov-cell ${r.dirClass}${tf === activeTF ? ' active-tf' : ''}`;
-      cell.innerHTML = `
-        <div class="ov-tf">${tf}</div>
-        <div class="ov-pct">${Math.round(r.displayPct)}%</div>
-        <div class="ov-dir">${r.direction}</div>`;
+      const r = analyze(candles);
+      btn.classList.remove('buy','sell','hold');
+      btn.classList.add(r.cls);
+      document.getElementById(`dir-${tf}`).textContent = r.dir;
+      document.getElementById(`dir-${tf}`).className = `tf-dir ${r.cls}`;
+      document.getElementById(`conf-${tf}`).textContent = `${r.conf}%`;
+      if (tf === activeTF) render(r);
     }).catch(() => {});
   }
-
-  // Insert after warning bar
-  const existing = document.getElementById('overviewGrid');
-  if (existing) existing.replaceWith(grid);
-  else document.getElementById('tabs').before(grid);
 }
 
-// ── REFRESH ──
+function switchTF(tf) {
+  activeTF = tf;
+  document.querySelectorAll('.tf-btn').forEach(b => b.classList.toggle('active', b.dataset.tf === tf));
+  // Re-render from cache if available
+  if (cache[tf]) {
+    const r = analyze(cache[tf]);
+    render(r);
+  }
+  refresh();
+  clearInterval(autoTimer);
+  autoTimer = setInterval(refresh, REFRESH_MS[tf]);
+}
+
+// ── Countdown on each button ──
+function updateCountdowns() {
+  const now = Date.now();
+  for (const tf of TIMEFRAMES) {
+    const el = document.getElementById(`cd-${tf}`);
+    if (!el) continue;
+    const intMs = TF_SECONDS[tf] * 1000;
+    const remaining = intMs - (now % intMs);
+    const s = Math.floor(remaining/1000);
+    const d=Math.floor(s/86400),h=Math.floor((s%86400)/3600),m=Math.floor((s%3600)/60),sec=s%60;
+    const pad=n=>String(n).padStart(2,'0');
+    el.textContent = d>0?`${d}d ${pad(h)}:${pad(m)}`:h>0?`${pad(h)}:${pad(m)}:${pad(sec)}`:`${pad(m)}:${pad(sec)}`;
+  }
+}
+
+// ── Auto refresh ──
+let autoTimer;
 async function refresh() {
   try {
     const candles = await fetchCandles(activeTF);
     cache[activeTF] = candles;
-    const result = analyze(candles);
-
-    // Store for comparison
-    const prevPred = prevPredictions[activeTF];
-    prevPredictions[activeTF] = result;
-
-    render(result);
-  } catch (e) {
-    document.getElementById('content').innerHTML = `<div class="error-msg">Error: ${e.message}<br>Retrying...</div>`;
+    const r = analyze(candles);
+    render(r);
+    // Update the button too
+    const btn = document.querySelector(`.tf-btn[data-tf="${activeTF}"]`);
+    if (btn) {
+      btn.classList.remove('buy','sell','hold');
+      btn.classList.add(r.cls);
+      document.getElementById(`dir-${activeTF}`).textContent = r.dir;
+      document.getElementById(`dir-${activeTF}`).className = `tf-dir ${r.cls}`;
+      document.getElementById(`conf-${activeTF}`).textContent = `${r.conf}%`;
+    }
+  } catch(e) {
+    document.getElementById('updated').textContent = `Error: ${e.message} — retrying...`;
     setTimeout(refresh, 8000);
   }
 }
 
-// ── TABS ──
-// ── SHARED TIMEFRAME SWITCH ──
-function switchTimeframe(tf) {
-  activeTF = tf;
-  // Sync tab bar highlight
-  document.querySelectorAll('.tabs button').forEach(b => {
-    b.classList.toggle('active', b.dataset.tf === tf);
-  });
-  // Sync overview grid highlight
-  document.querySelectorAll('.ov-cell').forEach(c => {
-    c.classList.toggle('active-tf', c.dataset.tf === tf);
-  });
-  document.getElementById('content').innerHTML = '<div class="loading">Analyzing...</div>';
-  refresh();
-  startAutoRefresh();
-  startCountdown();
-}
-
-document.getElementById('tabs').addEventListener('click', e => {
-  if (e.target.tagName !== 'BUTTON') return;
-  switchTimeframe(e.target.dataset.tf);
+// ── Detail toggle ──
+document.getElementById('detailToggle').addEventListener('click', function() {
+  const panel = document.getElementById('detailPanel');
+  const open = panel.classList.toggle('open');
+  this.textContent = open ? 'Hide Details' : 'Show Details (9 Indicators + 8 Agents)';
 });
 
-let timer;
-function startAutoRefresh() {
-  clearInterval(timer);
-  timer = setInterval(refresh, REFRESH_MS[activeTF]);
-}
-
-// ══════════════════════════
-//  CANDLE COUNTDOWN TIMER
-// ══════════════════════════
-
-const TF_SECONDS = {
-  '15m': 15 * 60,
-  '1h': 60 * 60,
-  '4h': 4 * 60 * 60,
-  '1d': 24 * 60 * 60,
-  '1w': 7 * 24 * 60 * 60,
-  '1M': 30 * 24 * 60 * 60
-};
-
-const TF_LABELS = {
-  '15m': '15m', '1h': '1H', '4h': '4H', '1d': '1D', '1w': '1W', '1M': '1M'
-};
-
-let countdownInterval;
-
-function getTimeUntilCandleClose(tf) {
-  const now = Date.now();
-  const intervalMs = TF_SECONDS[tf] * 1000;
-  // Candles are aligned to epoch (Binance standard)
-  const candleStart = Math.floor(now / intervalMs) * intervalMs;
-  const candleEnd = candleStart + intervalMs;
-  const remaining = candleEnd - now;
-  return { remaining: Math.max(0, remaining), total: intervalMs };
-}
-
-function formatCountdown(ms) {
-  const totalSec = Math.floor(ms / 1000);
-  const days = Math.floor(totalSec / 86400);
-  const hrs = Math.floor((totalSec % 86400) / 3600);
-  const mins = Math.floor((totalSec % 3600) / 60);
-  const secs = totalSec % 60;
-  const pad = n => String(n).padStart(2, '0');
-
-  if (days > 0) return `${days}d ${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
-  if (hrs > 0) return `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
-  return `${pad(mins)}:${pad(secs)}`;
-}
-
-function updateCountdown() {
-  const { remaining, total } = getTimeUntilCandleClose(activeTF);
-  const pct = (remaining / total) * 100;
-  const timeStr = formatCountdown(remaining);
-
-  document.getElementById('cdLabel').textContent = `${TF_LABELS[activeTF]} candle closes in`;
-  document.getElementById('cdTime').textContent = timeStr;
-  document.getElementById('cdFill').style.width = `${pct}%`;
-
-  // Urgency colors
-  const timeEl = document.getElementById('cdTime');
-  const fillEl = document.getElementById('cdFill');
-  const pctLeft = remaining / total;
-  if (pctLeft < 0.05) {
-    timeEl.className = 'countdown-time critical';
-    fillEl.style.background = '#ff5252';
-  } else if (pctLeft < 0.15) {
-    timeEl.className = 'countdown-time urgent';
-    fillEl.style.background = '#ff9800';
-  } else {
-    timeEl.className = 'countdown-time';
-    fillEl.style.background = '#4fc3f7';
-  }
-
-  // Auto-refresh when candle closes
-  if (remaining < 1000 && remaining > 0) {
-    setTimeout(() => { refresh(); fetchAllTFOverview(); }, 1500);
-  }
-}
-
-function startCountdown() {
-  clearInterval(countdownInterval);
-  updateCountdown();
-  countdownInterval = setInterval(updateCountdown, 1000);
-}
-
 // ── INIT ──
-fetchAllTFOverview();
-refresh().then(() => { startAutoRefresh(); startCountdown(); });
+buildTFGrid();
+setInterval(updateCountdowns, 1000);
+updateCountdowns();
+autoTimer = setInterval(refresh, REFRESH_MS[activeTF]);
 
-// Refresh overview every 2 minutes
-setInterval(fetchAllTFOverview, 120000);
-
+// Re-fetch all when coming back to app
 document.addEventListener('visibilitychange', () => {
-  if (!document.hidden) { refresh(); startAutoRefresh(); startCountdown(); fetchAllTFOverview(); }
+  if (!document.hidden) { buildTFGrid(); refresh(); }
 });
 
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
